@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   root: {
@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#00000099',
   },
   popupContainer: {
-    backgroundColor: 'black',
+    backgroundColor: '#53A979',
     borderRadius: 10,
     height: 250,
     alignItems: 'center',
@@ -19,11 +19,11 @@ const styles = StyleSheet.create({
   },
   minutes: {
     color: 'lightgrey',
-    fontSize: 36
+    fontSize: 36,
   },
   distance: {
     color: 'lightgrey',
-    fontSize: 26
+    fontSize: 26,
   },
   uberType: {
     color: 'lightgrey',
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     height: 60,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 60
+    borderRadius: 60,
   },
   declineButton: {
     backgroundColor: 'black',
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   declineText: {
     color: 'white',
     fontWeight: 'bold',
-  }
+  },
 });
 
 export default styles;
