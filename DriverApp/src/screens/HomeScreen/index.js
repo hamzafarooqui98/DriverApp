@@ -7,6 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import styles from './styles.js';
 import NewOrderPopup from '../../components/NewOrderPopup';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Geolocation from '@react-native-community/geolocation';
 import Pusher from 'pusher-js/react-native';
 
 // // Enable pusher logging - don't include this in production
@@ -25,7 +26,13 @@ const HomeScreen = () => {
   const [isOnline, setIsOnline] = useState(false);
   const [myPosition, setMyPosition] = useState(null);
   const [order, setOrder] = useState();
-  const [showOrder, setShowOrder] = useState(false);
+  const [currentRegion, setCurrentRegion] = useState({
+    latitude: 30.3753,
+    longitude: 69.3451,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
+  // const [showOrder, setShowOrder] = useState(false);
   const [newOrder, setNewOrder] = useState({
     id: '1',
     type: 'UberX',
@@ -41,6 +48,14 @@ const HomeScreen = () => {
       name: 'Hamza',
     },
   });
+
+  Geolocation.getCurrentPosition((info) =>
+    setCurrentRegion({
+      ...currentRegion,
+      latitude: info.coords.latitude,
+      longitude: info.coords.longitude,
+    }),
+  );
 
   const onDecline = () => {
     setNewOrder(null);
@@ -223,12 +238,7 @@ const HomeScreen = () => {
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}
         onUserLocationChange={onLocationChange}
-        initialRegion={{
-          latitude: 24.92827878065505,
-          longitude: 67.1265491253068,
-          latitudeDelta: 0.0222,
-          longitudeDelta: 0.0121,
-        }}
+        initialRegion={currentRegion}
         ref={mapRef}>
         {order && (
           // <View>
@@ -238,7 +248,7 @@ const HomeScreen = () => {
             destination={getDestination()}
             apikey={GOOGLE_MAPS_APIKEY}
             strokeWidth={5}
-            strokeColor="black"
+            strokeColor="#53A979"
           />
         )}
         {order && !order.pickedUp && (

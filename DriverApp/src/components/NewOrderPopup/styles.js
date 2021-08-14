@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
   },
   declineButton: {
-    backgroundColor: 'black',
+    backgroundColor: '#53A979',
     padding: 20,
     borderRadius: 50,
     width: 100,

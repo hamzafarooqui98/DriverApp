@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 
 const styles = StyleSheet.create({
   bottomContainer: {
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
 
   balanceButton: {
     position: 'absolute',
-    backgroundColor: '#1c1c1c',
+    backgroundColor: 'white',
     width: 100,
     height: 50,
     justifyContent: 'center',
@@ -49,9 +49,9 @@ const styles = StyleSheet.create({
   },
   balanceText: {
     fontSize: 24,
-    color: 'white',
+    color: 'green',
     fontWeight: 'bold',
-  }
+  },
 });
 
 export default styles;
