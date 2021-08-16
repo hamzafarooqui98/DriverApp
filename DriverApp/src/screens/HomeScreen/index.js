@@ -8,6 +8,7 @@ import styles from './styles.js';
 import NewOrderPopup from '../../components/NewOrderPopup';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Geolocation from '@react-native-community/geolocation';
+import io from 'socket.io-client';
 import Pusher from 'pusher-js/react-native';
 
 // // Enable pusher logging - don't include this in production
@@ -17,7 +18,7 @@ const origin = {latitude: 24.92826969212847, longitude: 67.12659673161777};
 const destination = {latitude: 37.771707, longitude: -122.4053769};
 const GOOGLE_MAPS_APIKEY = 'AIzaSyCNFJ91ksP57SweEz_mDgDXAewlJMlr2RI';
 
-const HomeScreen = () => {
+const HomeScreen = (props) => {
   // var available_drivers_channel = null; // this is where passengers will send a request to any available driver
   // var ride_channel = null; // the channel used for communicating the current location
   // // for a specific ride. Channel name is the username of the passenger
@@ -82,9 +83,9 @@ const HomeScreen = () => {
   };
 
   const onDirectionFound = (event) => {
-    console.log(event);
-    console.log('DIRECTIONS BAAD WALA ORDER:', order);
-    console.log('NEW ORDER:', newOrder);
+    // console.log(event);
+    // console.log('DIRECTIONS BAAD WALA ORDER:', order);
+    // console.log('NEW ORDER:', newOrder);
     if (order) {
       setOrder({
         ...order,
@@ -117,42 +118,46 @@ const HomeScreen = () => {
     };
   };
 
-  // React.useEffect(() => {
-  //   pusher = new Pusher('f4333a508bd2bce3771a', {
-  //     cluster: 'ap2',
-  //   });
-  //   ride_channel = pusher.subscribe('my-channel');
-  //   ride_channel.bind('my-event', (data) => {
-  //     // alert(JSON.stringify(data));
-  //     // console.log(data.Customer);
-  //     // console.log(data.pickup);
-  //     // console.log(data.destination);
-  //     // console.log(this.state.isConnected);
-  //     // if (!hasPassenger) {
-  //     //   // if the driver has currently no passenger
-  //     //   // alert the driver that they have a request
-  //     //   alert(
-  //     //     `You got a passenger! \n Customer: ${data.Customer} \n Pickup: ${data.OriginLatitude} \n Drop off: "${data.DestLongitude}"`
-  //     //   );
-  //     // }
-  //     // setCustomer(data.Customer);
-  //     // setDestination(data.OriginLatitude);
-  //     // setPickupLocation(data.OriginLongitude);
-  //     // setHasPassenger(true);
-  //     setNewOrder((prevState) => ({
-  //       ...prevState,
-  //       originLatitude: data.OriginLatitude,
-  //       originLongitude: data.OriginLongitude,
-  //       destLatitude: data.DestLatitude,
-  //       destLongitude: data.DestLongitude,
-  //       user: {
-  //         rating: 5.0,
-  //         name: data.Customer,
-  //       },
-  //     }));
-  //     setShowOrder(true);
-  //   });
-  // }, []);
+  useEffect(() => {
+    socket = io('https://6be53d3e42c4.ngrok.io');
+    socket.on('order details', (order) => {
+      console.log(order);
+    });
+    //   pusher = new Pusher('f4333a508bd2bce3771a', {
+    //     cluster: 'ap2',
+    //   });
+    //   ride_channel = pusher.subscribe('my-channel');
+    //   ride_channel.bind('my-event', (data) => {
+    //     // alert(JSON.stringify(data));
+    //     // console.log(data.Customer);
+    //     // console.log(data.pickup);
+    //     // console.log(data.destination);
+    //     // console.log(this.state.isConnected);
+    //     // if (!hasPassenger) {
+    //     //   // if the driver has currently no passenger
+    //     //   // alert the driver that they have a request
+    //     //   alert(
+    //     //     `You got a passenger! \n Customer: ${data.Customer} \n Pickup: ${data.OriginLatitude} \n Drop off: "${data.DestLongitude}"`
+    //     //   );
+    //     // }
+    //     // setCustomer(data.Customer);
+    //     // setDestination(data.OriginLatitude);
+    //     // setPickupLocation(data.OriginLongitude);
+    //     // setHasPassenger(true);
+    //     setNewOrder((prevState) => ({
+    //       ...prevState,
+    //       originLatitude: data.OriginLatitude,
+    //       originLongitude: data.OriginLongitude,
+    //       destLatitude: data.DestLatitude,
+    //       destLongitude: data.DestLongitude,
+    //       user: {
+    //         rating: 5.0,
+    //         name: data.Customer,
+    //       },
+    //     }));
+    //     setShowOrder(true);
+    //   });
+  }, []);
 
   const mapRef = useRef();
 
@@ -278,12 +283,12 @@ const HomeScreen = () => {
       </Pressable>
 
       <Pressable
-        onPress={() => console.warn('Hey')}
+        onPress={() => props.navigation.toggleDrawer()}
         style={[styles.roundButton, {top: 10, left: 10}]}>
         <Entypo name={'menu'} size={24} color="#4a4a4a" />
       </Pressable>
 
-      <Pressable
+      {/* <Pressable
         onPress={() => console.warn('Hey')}
         style={[styles.roundButton, {top: 10, right: 10}]}>
         <Entypo name={'menu'} size={24} color="#4a4a4a" />
@@ -293,12 +298,12 @@ const HomeScreen = () => {
         onPress={() => console.warn('Hey')}
         style={[styles.roundButton, {bottom: 110, left: 10}]}>
         <Entypo name={'menu'} size={24} color="#4a4a4a" />
-      </Pressable>
+      </Pressable> */}
 
       <Pressable
-        onPress={() => console.warn('Hey')}
+        onPress={() => props.navigation.navigate('Chat')}
         style={[styles.roundButton, {bottom: 110, right: 10}]}>
-        <Entypo name={'menu'} size={24} color="#4a4a4a" />
+        <Entypo name={'chat'} size={24} color="#4a4a4a" />
       </Pressable>
 
       <Pressable onPress={onGoPress} style={styles.goButton}>

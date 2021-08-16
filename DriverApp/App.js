@@ -14,10 +14,16 @@ import {
   Platform,
 } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
+import 'react-native-gesture-handler';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 
 import HomeScreen from './src/screens/HomeScreen';
+import RootNavigator from './src/Navigation/Root';
 
 navigator.geolocation = require('@react-native-community/geolocation');
+
+const Stack = createStackNavigator();
 
 const App: () => React$Node = () => {
   const androidPermission = async () => {
@@ -52,12 +58,13 @@ const App: () => React$Node = () => {
   }, []);
 
   return (
-    <>
+    <NavigationContainer>
       <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <HomeScreen />
+      <SafeAreaView style={{height: '100%', flexGrow: 1}}>
+        {/* <HomeScreen /> */}
+        <RootNavigator />
       </SafeAreaView>
-    </>
+    </NavigationContainer>
   );
 };
 
