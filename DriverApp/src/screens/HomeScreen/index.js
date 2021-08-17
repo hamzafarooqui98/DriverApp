@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
-import {View, Text, Dimensions, Pressable} from 'react-native';
+import {View, Text, Dimensions, Pressable, Button} from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -10,6 +10,9 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Geolocation from '@react-native-community/geolocation';
 import io from 'socket.io-client';
 import Pusher from 'pusher-js/react-native';
+import {useSelector} from 'react-redux';
+import {setOrigin, setDestination, selectUser} from '../../slices/navSlice';
+//import {Button} from 'react-native-elements/dist/buttons/Button';
 
 // // Enable pusher logging - don't include this in production
 // Pusher.logToConsole = true;
@@ -25,38 +28,50 @@ const HomeScreen = (props) => {
 
   // var pusher = null; // the pusher client
   const [isOnline, setIsOnline] = useState(false);
+  const [orderArrived, setOrderArrived] = useState(false);
   const [myPosition, setMyPosition] = useState(null);
   const [order, setOrder] = useState();
-  const [currentRegion, setCurrentRegion] = useState({
-    latitude: 30.3753,
-    longitude: 69.3451,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
+  // const [currentRegion, setCurrentRegion] = useState({
+  //   latitude: 30.3753,
+  //   longitude: 69.3451,
+  //   latitudeDelta: 0.0922,
+  //   longitudeDelta: 0.0421,
+  // });
   // const [showOrder, setShowOrder] = useState(false);
+  const userInformation = useSelector(selectUser);
   const [newOrder, setNewOrder] = useState({
-    id: '1',
-    type: 'UberX',
-
-    originLatitude: 24.915003728618323,
-    originLongitude: 67.12725490091005,
-
-    destLatitude: 24.93257509249255,
-    destLongitude: 67.12723446534324,
-
-    user: {
-      rating: 4.5,
-      name: 'Hamza',
-    },
+    // id: '1',
+    // type: 'UberX',
+    // originLatitude: 24.915003728618323,
+    // originLongitude: 67.12725490091005,
+    // destLatitude: 24.93257509249255,
+    // destLongitude: 67.12723446534324,
+    // user: {
+    //   rating: 4.5,
+    //   name: 'Hamza',
+    // },
+    // id: '1',
+    // type: 'UberX',
+    // orgin: '',
+    // destination: '',
+    // originLatitude: '',
+    // originLongitude: '',
+    // destLatitude: '',
+    // destLongitude: '',
+    // user: {
+    //   rating: 4.5,
+    //   name: '',
+    //   phone: '',
+    // },
   });
 
-  Geolocation.getCurrentPosition((info) =>
-    setCurrentRegion({
-      ...currentRegion,
-      latitude: info.coords.latitude,
-      longitude: info.coords.longitude,
-    }),
-  );
+  // Geolocation.getCurrentPosition((info) =>
+  //   setCurrentRegion({
+  //     ...currentRegion,
+  //     latitude: info.coords.latitude,
+  //     longitude: info.coords.longitude,
+  //   }),
+  // );
 
   const onDecline = () => {
     setNewOrder(null);
@@ -119,9 +134,10 @@ const HomeScreen = (props) => {
   };
 
   useEffect(() => {
-    socket = io('https://6be53d3e42c4.ngrok.io');
+    console.log(userInformation);
+    socket = io('https://planit-fyp.herokuapp.com');
     socket.on('order details', (order) => {
-      console.log(order);
+      rejectBooking(order.data._id);
     });
     //   pusher = new Pusher('f4333a508bd2bce3771a', {
     //     cluster: 'ap2',
@@ -158,6 +174,40 @@ const HomeScreen = (props) => {
     //     setShowOrder(true);
     //   });
   }, []);
+
+  const confirmBooking = async () => {
+    socket.emit('guide details', userInformation);
+  };
+
+  const rejectBooking = async (orderId) => {
+    // setReject(true);
+    const res = await fetch(
+      `https://planit-fyp.herokuapp.com/api/orders/${orderId}`,
+    );
+    const response = await res.json();
+    console.log(response);
+    setNewOrder({
+      id: '1',
+      type: 'UberX',
+      cost: response.order.cost,
+      // duration: response.order.duration,
+      origin: response.order.origin,
+      destination: response.order.destination,
+      originLatitude: Number(response.order.originlatitude),
+      originLongitude: Number(response.order.originLongitude),
+      destLatitude: Number(response.order.destLatitude),
+      destLongitude: Number(response.order.destLongitude),
+      user: {
+        rating: 5.0,
+        name: response.order.name,
+        phone: response.order.phone,
+      },
+    });
+    alert(
+      `Customer:${response.order.name},Phone:${response.order.phone},Origin:${response.order.origin},Destination:${response.order.destination}`,
+    );
+    // socket.emit("order", response);
+  };
 
   const mapRef = useRef();
 
@@ -243,7 +293,12 @@ const HomeScreen = (props) => {
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}
         onUserLocationChange={onLocationChange}
-        initialRegion={currentRegion}
+        initialRegion={{
+          latitude: 30.3753,
+          longitude: 69.3451,
+          latitudeDelta: 10.500022,
+          longitudeDelta: 10.5000421,
+        }}
         ref={mapRef}>
         {order && (
           // <View>
@@ -306,7 +361,13 @@ const HomeScreen = (props) => {
         <Entypo name={'chat'} size={24} color="#4a4a4a" />
       </Pressable>
 
-      <Pressable onPress={onGoPress} style={styles.goButton}>
+      {/* {orderArrived ? <Button title="Accept Ride" onPress={}/> :  null} */}
+
+      <Pressable
+        onPress={() => {
+          confirmBooking();
+        }}
+        style={styles.goButton}>
         <Text style={styles.goText}>{isOnline ? 'END' : 'GO'}</Text>
       </Pressable>
 
@@ -314,9 +375,14 @@ const HomeScreen = (props) => {
         <Ionicons name={'options'} size={30} color="#4a4a4a" />
         {renderBottomTitle()}
         <Entypo name={'menu'} size={30} color="#4a4a4a" />
+        {/* <Pressable
+        onPress={() => props.navigation.navigate('Chat')}
+        style={[styles.roundButton, {bottom: 110, right: 10}]}>
+        <Entypo name={'chat'} size={24} color="#4a4a4a" />
+      </Pressable> */}
       </View>
 
-      {newOrder && (
+      {newOrder?.id && (
         <NewOrderPopup
           newOrder={newOrder}
           duration={2}

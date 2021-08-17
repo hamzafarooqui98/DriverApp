@@ -12,14 +12,16 @@ import {
   StatusBar,
   PermissionsAndroid,
   Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import HomeScreen from './src/screens/HomeScreen';
-import RootNavigator from './src/Navigation/Root';
+import StartingNavigator from './src/Navigation/StartingNav';
+import store from './store';
+import {Provider} from 'react-redux';
 
 navigator.geolocation = require('@react-native-community/geolocation');
 
@@ -58,13 +60,19 @@ const App: () => React$Node = () => {
   }, []);
 
   return (
-    <NavigationContainer>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView style={{height: '100%', flexGrow: 1}}>
-        {/* <HomeScreen /> */}
-        <RootNavigator />
-      </SafeAreaView>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <StatusBar barStyle="dark-content" />
+        <SafeAreaView style={{height: '100%', flexGrow: 1}}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{flex: 1}}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? -64 : 0}>
+            <StartingNavigator />
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </NavigationContainer>
+    </Provider>
   );
 };
 
