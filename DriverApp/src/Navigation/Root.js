@@ -3,6 +3,8 @@ import {View, Text} from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import HomeNavigator from './Home';
 import CustomDrawer from './CustomDrawer';
+import ProfileStackNavigator from './ProfileStackNav';
+import TripsHistoryComponent from '../screens/NavigationScreens/TripsHistory';
 
 const Drawer = createDrawerNavigator();
 
@@ -19,13 +21,9 @@ const RootNavigator = (props) => {
       drawerContent={(props) => <CustomDrawer {...props} />}>
       <Drawer.Screen name="Home" component={HomeNavigator} />
 
-      <Drawer.Screen name="Your Trips">
-        {() => <DummyScreen name={'Your Trips'} />}
-      </Drawer.Screen>
+      <Drawer.Screen name="Your Trips" component={TripsHistoryComponent} />
 
-      <Drawer.Screen name="Help">
-        {() => <DummyScreen name={'Help'} />}
-      </Drawer.Screen>
+      <Drawer.Screen name="Profile" component={ProfileStackNavigator} />
 
       <Drawer.Screen name="Wallet">
         {() => <DummyScreen name={'Wallet'} />}
