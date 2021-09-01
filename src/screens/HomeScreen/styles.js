@@ -1,13 +1,15 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
+import Colors from '../../constants/Colors';
 
 const styles = StyleSheet.create({
   bottomContainer: {
-    height: 100,
+    height: 110,
     backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 15,
+    marginBottom: 20,
   },
   bottomText: {
     fontSize: 22,
@@ -21,13 +23,13 @@ const styles = StyleSheet.create({
   },
   goButton: {
     position: 'absolute',
-    backgroundColor: '#1495ff',
+    backgroundColor: Colors.primary,
     width: 75,
     height: 75,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 50,
-    bottom: 110,
+    bottom: 130,
     left: Dimensions.get('window').width / 2 - 37,
   },
   goText: {
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
 
   balanceButton: {
     position: 'absolute',
-    backgroundColor: '#1c1c1c',
+    backgroundColor: 'white',
     width: 100,
     height: 50,
     justifyContent: 'center',
@@ -49,9 +51,9 @@ const styles = StyleSheet.create({
   },
   balanceText: {
     fontSize: 24,
-    color: 'white',
+    color: 'green',
     fontWeight: 'bold',
-  }
+  },
 });
 
 export default styles;
