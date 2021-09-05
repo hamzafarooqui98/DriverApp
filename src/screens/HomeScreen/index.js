@@ -1,6 +1,16 @@
 import React, {useState, useRef, useEffect} from 'react';
-import {View, Text, Dimensions, Pressable, Button} from 'react-native';
+import {
+  View,
+  Text,
+  Dimensions,
+  Pressable,
+  Button,
+  Modal,
+  StyleSheet,
+} from 'react-native';
+// import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+// import MapViewDirections from 'react-native-maps-directions';
 import MapViewDirections from 'react-native-maps-directions';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -11,8 +21,14 @@ import Geolocation from '@react-native-community/geolocation';
 import io from 'socket.io-client';
 import Pusher from 'pusher-js/react-native';
 import {useSelector} from 'react-redux';
-import {setOrigin, setDestination, selectUser} from '../../slices/navSlice';
+import {
+  setOrigin,
+  setDestination,
+  selectUser,
+  setGuideLocation,
+} from '../../slices/navSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useDispatch} from 'react-redux';
 //import {Button} from 'react-native-elements/dist/buttons/Button';
 
 // // Enable pusher logging - don't include this in production
@@ -20,7 +36,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const origin = {latitude: 24.92826969212847, longitude: 67.12659673161777};
 const destination = {latitude: 37.771707, longitude: -122.4053769};
-const GOOGLE_MAPS_APIKEY = 'AIzaSyCNFJ91ksP57SweEz_mDgDXAewlJMlr2RI';
+// const GOOGLE_MAPS_APIKEY = 'AIzaSyCWeFNG8hWPUNO9JCChY_nyKDnRq6uR9gY';
+const GOOGLE_MAPS_APIKEY = 'AIzaSyCWeFNG8hWPUNO9JCChY_nyKDnRq6uR9gY';
 
 const HomeScreen = (props) => {
   // var available_drivers_channel = null; // this is where passengers will send a request to any available driver
@@ -32,6 +49,13 @@ const HomeScreen = (props) => {
   const [orderArrived, setOrderArrived] = useState(false);
   const [myPosition, setMyPosition] = useState(null);
   const [order, setOrder] = useState();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [name, setName] = useState('');
+  const [origin, setOrigin] = useState('');
+  const [destination, setDestination] = useState('');
+  const [phone, setPhone] = useState('');
+  const dispatch = useDispatch();
+  const [val, setVal] = useState(false);
   // const [currentRegion, setCurrentRegion] = useState({
   //   latitude: 30.3753,
   //   longitude: 69.3451,
@@ -74,19 +98,6 @@ const HomeScreen = (props) => {
   //   }),
   // );
 
-  const onDecline = () => {
-    setNewOrder(null);
-  };
-
-  const onAccept = (nOrder) => {
-    //console.log('Han bhai', nOrder);
-    setOrder(nOrder);
-    setNewOrder(null);
-    // console.log('Purana wala order:', order);
-    // console.log('NEW ORDER', newOrder);
-    // setShowOrder(false);
-  };
-
   const onGoPress = () => {
     setIsOnline(!isOnline);
   };
@@ -96,6 +107,34 @@ const HomeScreen = (props) => {
       latitude: event.nativeEvent.coordinate.latitude,
       longitude: event.nativeEvent.coordinate.longitude,
     });
+    val
+      ? setTimeout(() => {
+          //setMyPosition(null);
+          socket.emit('guide Location', myPosition);
+        }, 5000)
+      : {};
+  };
+
+  const confirmBooking = async () => {
+    socket.emit('guide details', userInformation);
+    console.log(myPosition);
+    socket.emit('guide Location', myPosition);
+  };
+
+  const onDecline = () => {
+    setNewOrder(null);
+  };
+
+  const onAccept = (nOrder) => {
+    //console.log('Han bhai', nOrder);
+    setOrder(nOrder);
+    setNewOrder(null);
+    confirmBooking();
+    setVal(true);
+
+    // console.log('Purana wala order:', order);
+    // console.log('NEW ORDER', newOrder);
+    // setShowOrder(false);
   };
 
   const onDirectionFound = (event) => {
@@ -148,13 +187,16 @@ const HomeScreen = (props) => {
   };
 
   useEffect(() => {
-    // console.log(userInformation);
+    console.log('Hello');
+    console.log(userInformation);
+    console.log(myPosition);
     socket = io('https://planit-fyp.herokuapp.com');
     socket.on('order details', (order) => {
       rejectBooking(order.data._id);
+      console.log(myPosition);
     });
     getData();
-    console.log('Hello');
+    console.log('Helloo');
     //   pusher = new Pusher('f4333a508bd2bce3771a', {
     //     cluster: 'ap2',
     //   });
@@ -191,8 +233,10 @@ const HomeScreen = (props) => {
     //   });
   }, []);
 
-  const confirmBooking = async () => {
-    socket.emit('guide details', userInformation);
+  const pickupUser = () => {
+    const guidePosition = null;
+    socket.emit('final Position', guidePosition);
+    setVal(false);
   };
 
   const rejectBooking = async (orderId) => {
@@ -202,6 +246,11 @@ const HomeScreen = (props) => {
     );
     const response = await res.json();
     console.log(response);
+    setName(response.order.name);
+    setPhone(response.order.phone);
+    setOrigin(response.order.origin);
+    setDestination(response.order.destination);
+    setModalVisible(true);
     setNewOrder({
       id: '1',
       type: 'UberX',
@@ -219,9 +268,9 @@ const HomeScreen = (props) => {
         phone: response.order.phone,
       },
     });
-    alert(
-      `Customer:${response.order.name},Phone:${response.order.phone},Origin:${response.order.origin},Destination:${response.order.destination}`,
-    );
+    // alert(
+    //   `Customer:${response.order.name},Phone:${response.order.phone},Origin:${response.order.origin},Destination:${response.order.destination}`,
+    // );
     // socket.emit("order", response);
   };
 
@@ -378,7 +427,7 @@ const HomeScreen = (props) => {
 
       <Pressable
         onPress={() => {
-          confirmBooking();
+          pickupUser();
         }}
         style={styles.goButton}>
         <Text style={styles.goText}>{isOnline ? 'END' : 'GO'}</Text>
@@ -397,6 +446,37 @@ const HomeScreen = (props) => {
         <Entypo name={'chat'} size={24} color="#4a4a4a" />
       </Pressable> */}
       </View>
+      {/* 
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Name: {name}</Text>
+            <Text style={styles.modalText}>Phone: {phone}</Text>
+            <Text style={styles.modalText}>Pickup: {origin}</Text>
+            <Text style={styles.modalText}>Destination: {destination}</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {
+                confirmBooking();
+                setModalVisible(!modalVisible);
+              }}>
+              <Text style={styles.textStyle}>Accept Trip</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.textStyle}>Reject Trip</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal> */}
 
       {newOrder?.id && (
         <NewOrderPopup

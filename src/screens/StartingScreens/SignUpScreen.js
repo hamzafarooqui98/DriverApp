@@ -1,120 +1,23 @@
-// import React, {useState} from 'react';
+// import React, { useState, useEffect } from "react";
 
-// import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-// import {Button} from 'react-native';
-// import {useNavigation} from '@react-navigation/native';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import {useDispatch} from 'react-redux';
+// import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 
-// import {setUser} from '../../slices/navSlice';
-// import Input from '../../components/Input';
-// import Colors from '../../constants/Colors';
-// import {AuthContext} from '../../components/Context';
+// import Input from "../../components/Input";
+// import Colors from "../../constants/Colors";
+
+// import { Button } from "react-native";
+// import { useNavigation } from "@react-navigation/native";
 
 // const SignUpScreen = (props) => {
-//   const {signIn, signUp} = React.useContext(AuthContext);
 //   const [isSignup, setIsSignup] = useState(false);
 //   const navigation = useNavigation();
-//   const [name, setName] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [phone, setPhone] = useState('');
-//   const [token, setToken] = useState('');
-//   const [role, setRole] = useState('guide');
-//   // var token = "";
-//   const [message, setMessage] = useState('');
-
-//   const dispatch = useDispatch();
-
-//   const storeData = async (value) => {
-//     try {
-//       await AsyncStorage.setItem('@storage_Key', value);
-//     } catch (e) {
-//       // saving error
-//     }
-//   };
-
-//   const handleSubmit = async () => {
-//     const res = await fetch(`https://planit-fyp.herokuapp.com/api/users/`, {
-//       method: 'POST',
-//       headers: {
-//         Accept: 'application/json',
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         name,
-//         email,
-//         password,
-//         phone,
-//         role,
-//       }),
-//     });
-//     const response = await res.json();
-
-//     //  console.log(response);
-//     if (response.token) {
-//       setToken(response.token);
-//       dispatch(
-//         setUser({
-//           name: response.name,
-//           phone: response.phone,
-//           token: response.token,
-//         }),
-//       );
-//       signUp();
-//       navigation.navigate('EnterPinScreen');
-//       setName('');
-//       setEmail('');
-//       setPassword('');
-//       setPhone('');
-//     } else {
-//       alert(`Error:${response.message}`);
-//     }
-//   };
-
-//   const handleLogin = async () => {
-//     const res = await fetch(
-//       `https://planit-fyp.herokuapp.com/api/users/login`,
-//       {
-//         method: 'POST',
-//         headers: {
-//           Accept: 'application/json',
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//           email,
-//           password,
-//         }),
-//       },
-//     );
-//     const response = await res.json();
-//     storeData(JSON.stringify(response));
-//     //  console.log(response);
-//     if (response.token) {
-//       setToken(response.token);
-//       dispatch(
-//         setUser({
-//           name: response.name,
-//           phone: response.phone,
-//           token: response.token,
-//         }),
-//       );
-//       signIn();
-//       navigation.navigate('RootScreen');
-
-//       setEmail('');
-//       setPassword('');
-//     } else {
-//       alert(`Error:${response.message}`);
-//     }
-//   };
 
 //   return (
 //     <View style={styles.screen}>
 //       <View style={styles.imageContainer}>
 //         <Image
 //           style={styles.image}
-//           source={require('../../assets/planiTMainLogo.png')}
+//           source={require("../../assets/planiTMainLogo.png")}
 //           resizeMode="cover"
 //         />
 //       </View>
@@ -127,8 +30,6 @@
 //             autoCorrect={false}
 //             maxLength={50}
 //             keyboardType="email-address"
-//             value={email}
-//             onChangeText={(email) => setEmail(email)}
 //           />
 //           <Text style={styles.textStyles}>Enter Password</Text>
 //           <Input
@@ -136,8 +37,6 @@
 //             autoCapitilize="none"
 //             autoCorrect={false}
 //             secureTextEntry={true}
-//             value={password}
-//             onChangeText={(password) => setPassword(password)}
 //           />
 //         </View>
 //       ) : (
@@ -148,8 +47,6 @@
 //             autoCapitilize="none"
 //             autoCorrect={false}
 //             maxLength={50}
-//             value={name}
-//             onChangeText={(name) => setName(name)}
 //           />
 //           <Text style={styles.textStyles}>Enter E-mail</Text>
 //           <Input
@@ -158,8 +55,6 @@
 //             autoCorrect={false}
 //             maxLength={50}
 //             keyboardType="email-address"
-//             value={email}
-//             onChangeText={(email) => setEmail(email)}
 //           />
 //           <Text style={styles.textStyles}>Enter Password</Text>
 //           <Input
@@ -167,39 +62,20 @@
 //             autoCapitilize="none"
 //             autoCorrect={false}
 //             secureTextEntry={true}
-//             value={password}
-//             onChangeText={(password) => setPassword(password)}
-//           />
-//           <Text style={styles.textStyles}>Enter Phone</Text>
-//           <Input
-//             blurOnSubmit
-//             autoCapitilize="none"
-//             autoCorrect={false}
-//             maxLength={50}
-//             keyboardType="email-address"
-//             value={phone}
-//             onChangeText={(phone) => setPhone(phone)}
 //           />
 //         </View>
 //       )}
 //       <View style={styles.buttonContainer}>
 //         <TouchableOpacity
-//           // onPress={() => {
-//           //   handleSubmit();
-//           //   {
-//           //     isSignup
-//           //       ? navigation.navigate("HomeScreen")
-//           //       : navigation.navigate("EnterPinScreen");
-//           //   }
-//           // }}
 //           onPress={() => {
-//             isSignup ? handleLogin() : handleSubmit();
-//             // if (token) navigation.navigate("HomeScreen");
-//             // isSignup
-//             //   ? navigation.navigate("HomeScreen")
-//             //   : navigation.navigate("EnterPinScreen");
-//           }}>
-//           <Text> {isSignup ? 'Log In' : 'Sign Up'}</Text>
+//             {
+//               isSignup
+//                 ? navigation.navigate("HomeScreen")
+//                 : navigation.navigate("EnterPinScreen");
+//             }
+//           }}
+//         >
+//           <Text> {isSignup ? "Log In" : "Sign Up"}</Text>
 //         </TouchableOpacity>
 //       </View>
 //       <View style={styles.textBase}>
@@ -207,9 +83,10 @@
 //         <TouchableOpacity
 //           onPress={() => {
 //             setIsSignup((prevState) => !prevState);
-//           }}>
+//           }}
+//         >
 //           <Text style={styles.signInText}>
-//             Switch to {isSignup ? 'Sign Up' : 'Log In'}
+//             Switch to {isSignup ? "Sign Up" : "Log In"}
 //           </Text>
 //         </TouchableOpacity>
 //       </View>
@@ -218,52 +95,52 @@
 // };
 
 // SignUpScreen.navigationOptions = {
-//   headerTitle: 'Authenticate',
+//   headerTitle: "Authenticate",
 // };
 
 // const styles = StyleSheet.create({
 //   screen: {
-//     justifyContent: 'center',
-//     alignItems: 'center',
+//     justifyContent: "center",
+//     alignItems: "center",
 //     //height: "100%",
 //   },
 //   imageContainer: {
-//     width: '40%',
-//     height: '40%',
+//     width: "40%",
+//     height: "40%",
 //     //overflow: "hidden",
 //   },
 //   image: {
-//     width: '100%',
-//     height: '100%',
+//     width: "100%",
+//     height: "100%",
 //   },
 //   textStyles: {
 //     color: Colors.secondary,
 //     fontSize: 16,
-//     fontWeight: '400',
+//     fontFamily: "montserrat-medium",
 //     marginTop: 1,
-//     width: '100%',
+//     width: "100%",
 //   },
 //   buttonContainer: {
-//     width: '40%',
-//     height: '10%',
+//     width: "40%",
+//     height: "10%",
 //   },
 //   textBase: {
-//     alignItems: 'center',
-//     width: '80%',
-//     height: '10%',
+//     alignItems: "center",
+//     width: "80%",
+//     height: "10%",
 //     marginTop: 10,
 //   },
 //   accountText: {
 //     fontSize: 15,
 //     color: Colors.secondary,
-//     fontWeight: 'normal',
+//     fontFamily: "montserrat-regular",
 //   },
 //   signInText: {
 //     color: Colors.primary,
-//     fontWeight: '400',
+//     fontFamily: "montserrat-medium",
 //     paddingTop: 10,
 //   },
-//   inputTextHolder: {width: '80%', height: '30%', marginBottom: 30},
+//   inputTextHolder: { width: "80%", height: "30%", marginBottom: 30 },
 // });
 
 // export default SignUpScreen;
@@ -282,15 +159,13 @@ import {
   StatusBar,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import LinearGradient from 'react-native-linear-gradient';
+// import LinearGradient from "react-native-linear-gradient";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useDispatch} from 'react-redux';
-
-//import { LinearGradient } from "expo-linear-gradient";
+import LinearGradient from 'react-native-linear-gradient';
 import Colors from '../../constants/Colors';
+import {useDispatch} from 'react-redux';
 import {setUser} from '../../slices/navSlice';
 
 const SignUpScreen = ({navigation}) => {
@@ -304,6 +179,23 @@ const SignUpScreen = ({navigation}) => {
     secureTextEntry: true,
     confirm_secureTextEntry: true,
   });
+  const [name, setName] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [phone, setPhone] = React.useState('');
+  const [token, setToken] = React.useState('');
+  // var token = "";
+  const [message, setMessage] = React.useState('');
+
+  const dispatch = useDispatch();
+
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem('@storage_Key', value);
+    } catch (e) {
+      // saving error
+    }
+  };
 
   const textInputChange = (val) => {
     if (val.length !== 0) {
@@ -379,6 +271,40 @@ const SignUpScreen = ({navigation}) => {
     });
   };
 
+  const handleSubmit = async () => {
+    const res = await fetch(`https://planit-fyp.herokuapp.com/api/users/`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        phone,
+      }),
+    });
+    const response = await res.json();
+    if (response.token) {
+      setToken(response.token);
+      dispatch(
+        setUser({
+          name: response.name,
+          phone: response.phone,
+          token: response.token,
+        }),
+      );
+      navigation.navigate('EnterPinScreen');
+      setName('');
+      setEmail('');
+      setPassword('');
+      setPhone('');
+    } else {
+      alert(`Error:${response.message}`);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* <StatusBar backgroundColor={Colors.primary} barStyle="light-content" /> */}
@@ -394,7 +320,11 @@ const SignUpScreen = ({navigation}) => {
               placeholder="Your Username"
               style={styles.textInput}
               autoCapitalize="none"
-              onChangeText={(val) => textInputChange(val)}
+              value={name}
+              onChangeText={(name) => {
+                textInputChange(name);
+                setName(name);
+              }}
             />
             {data.check_textInputChange ? (
               <Animatable.View animation="bounceIn">
@@ -417,7 +347,11 @@ const SignUpScreen = ({navigation}) => {
               placeholder="Your E-mail"
               style={styles.textInput}
               autoCapitalize="none"
-              onChangeText={(val) => textInputChanges(val)}
+              value={email}
+              onChangeText={(email) => {
+                textInputChanges(email);
+                setEmail(email);
+              }}
             />
             {data.check_textInputChanges ? (
               <Animatable.View animation="bounceIn">
@@ -440,7 +374,11 @@ const SignUpScreen = ({navigation}) => {
               placeholder="Your Phone Number"
               style={styles.textInput}
               autoCapitalize="none"
-              onChangeText={(val) => textInputChanged(val)}
+              value={phone}
+              onChangeText={(phone) => {
+                textInputChanged(phone);
+                setPhone(phone);
+              }}
               keyboardType="number-pad"
             />
             {data.check_textInputChanged ? (
@@ -466,7 +404,11 @@ const SignUpScreen = ({navigation}) => {
               secureTextEntry={data.secureTextEntry ? true : false}
               style={styles.textInput}
               autoCapitalize="none"
-              onChangeText={(val) => handlePasswordChange(val)}
+              value={password}
+              onChangeText={(password) => {
+                handlePasswordChange(password);
+                setPassword(password);
+              }}
             />
             <TouchableOpacity onPress={updateSecureTextEntry}>
               {data.secureTextEntry ? (
@@ -521,7 +463,7 @@ const SignUpScreen = ({navigation}) => {
             <TouchableOpacity
               style={styles.signIn}
               onPress={() => {
-                navigation.navigate('EnterPinScreen');
+                handleSubmit();
               }}>
               <LinearGradient
                 colors={['#08d4c4', '#01ab9d']}

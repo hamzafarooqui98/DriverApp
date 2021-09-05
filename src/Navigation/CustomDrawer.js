@@ -9,10 +9,13 @@ import {useNavigation} from '@react-navigation/native';
 
 import {AuthContext} from '../components/Context';
 import Colors from '../constants/Colors';
+import {setOrigin, setDestination, selectUser} from '../slices/navSlice';
+import {useSelector} from 'react-redux';
 
 const CustomDrawer = (props) => {
   const [name, setName] = useState('');
   const {signOut} = React.useContext(AuthContext);
+  const userInformation = useSelector(selectUser);
 
   const removeData = async () => {
     try {
@@ -66,7 +69,9 @@ const CustomDrawer = (props) => {
           />
 
           <View>
-            <Text style={{color: 'white', fontSize: 24}}>{name}</Text>
+            <Text style={{color: 'white', fontSize: 24}}>
+              {userInformation.name}
+            </Text>
             <Text style={{color: 'white'}}>5.00 *</Text>
           </View>
         </View>

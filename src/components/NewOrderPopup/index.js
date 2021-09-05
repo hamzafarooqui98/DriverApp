@@ -21,11 +21,31 @@ const NewOrderPopup = ({newOrder, onAccept, onDecline, duration, distance}) => {
 
           <Text style={styles.uberType}>
             <AntDesign name={'star'} size={18} />
+            {newOrder?.user.name}
+          </Text>
+
+          <Text style={styles.uberType}>
+            <AntDesign name={'star'} size={18} />
+            {newOrder?.user.phone}
+          </Text>
+
+          <Text style={styles.uberType}>
+            <AntDesign name={'star'} size={18} />
+            {newOrder?.origin}
+          </Text>
+
+          <Text style={styles.uberType}>
+            <AntDesign name={'star'} size={18} />
+            {newOrder?.destination}
+          </Text>
+
+          <Text style={styles.uberType}>
+            <AntDesign name={'star'} size={18} />
             {newOrder?.user.rating}
           </Text>
         </View>
 
-        <Text style={styles.minutes}>{duration} min</Text>
+        <Text style={styles.minutes}>{duration} minn</Text>
         <Text style={styles.distance}>{distance} mi</Text>
       </Pressable>
     </View>

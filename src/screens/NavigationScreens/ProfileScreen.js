@@ -16,6 +16,8 @@ import Entypo from 'react-native-vector-icons/Entypo';
 //import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 import Colors from '../../constants/Colors';
+import {setOrigin, setDestination, selectUser} from '../../slices/navSlice';
+import {useSelector} from 'react-redux';
 
 // import Share from 'react-native-share';
 
@@ -41,14 +43,16 @@ const ProfileScreen = ({navigation}) => {
   const [phone, setPhone] = useState('');
   const [ordersLength, setOrdersLength] = useState(0);
   const [earnings, setEarnings] = useState(0);
+  const userInformation = useSelector(selectUser);
+
   const getData = async () => {
     try {
       const value = await AsyncStorage.getItem('@storage_Key');
-      if (value !== null) {
+      if (userInformation.token) {
         // value previously stored
         // console.log(value);
         const val = JSON.parse(value);
-        const userId = val.id;
+        const userId = userInformation.id;
         const res = await fetch(
           `https://planit-fyp.herokuapp.com/api/orders/getOrderByUserId/${userId}`,
         );
@@ -67,6 +71,7 @@ const ProfileScreen = ({navigation}) => {
 
   useEffect(() => {
     getData();
+    console.log(userInformation.id);
     // console.log('Hello world');
   });
 
@@ -90,7 +95,7 @@ const ProfileScreen = ({navigation}) => {
                     marginBottom: 5,
                   },
                 ]}>
-                {name}
+                {userInformation.name}
               </Title>
               <Caption style={styles.caption}>{email}</Caption>
             </View>
@@ -101,16 +106,20 @@ const ProfileScreen = ({navigation}) => {
           <View style={styles.row}>
             <Icon name="map-marker-radius" color="#777777" size={20} />
             <Text style={{color: '#777777', marginLeft: 20}}>
-              Kolkata, India
+              {userInformation.city}, {userInformation.country}
             </Text>
           </View>
           <View style={styles.row}>
             <Icon name="phone" color="#777777" size={20} />
-            <Text style={{color: '#777777', marginLeft: 20}}>{phone}</Text>
+            <Text style={{color: '#777777', marginLeft: 20}}>
+              {userInformation.phone}
+            </Text>
           </View>
           <View style={styles.row}>
             <Icon name="email" color="#777777" size={20} />
-            <Text style={{color: '#777777', marginLeft: 20}}>{email}</Text>
+            <Text style={{color: '#777777', marginLeft: 20}}>
+              {userInformation.email}
+            </Text>
           </View>
         </View>
 
