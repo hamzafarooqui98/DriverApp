@@ -3,12 +3,12 @@ import {View, Text} from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import HomeNavigator from './Home';
 import CustomDrawer from './CustomDrawer';
-import ProfileStackNavigator from './ProfileStackNav';
 import TripsHistoryComponent from '../screens/NavigationScreens/TripsHistory';
 import SignInScreen from '../screens/StartingScreens/SignIn';
 import Colors from '../constants/Colors';
 import ProfileScreen from '../screens/NavigationScreens/ProfileScreen';
 import EditProfileScreen from '../screens/NavigationScreens/EditProfileScreen';
+import PreBookNavigator from '../Navigation/PreBookStackNav';
 
 const Drawer = createDrawerNavigator();
 
@@ -35,9 +35,7 @@ const RootNavigator = (props) => {
 
       <Drawer.Screen name="Profile" component={ProfileScreen} />
       <Drawer.Screen name="Edit Profile" component={EditProfileScreen} />
-      <Drawer.Screen name="Pre-Book">
-        {() => <DummyScreen name={'Pre-Book'} />}
-      </Drawer.Screen>
+      <Drawer.Screen name="Pre-Book" component={PreBookNavigator} />
 
       {/* <Drawer.Screen
         name="SignInScreen"

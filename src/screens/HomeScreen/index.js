@@ -237,6 +237,7 @@ const HomeScreen = (props) => {
     const guidePosition = null;
     socket.emit('final Position', guidePosition);
     setVal(false);
+    setIsOnline(!isOnline);
   };
 
   const rejectBooking = async (orderId) => {

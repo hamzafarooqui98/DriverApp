@@ -6,6 +6,7 @@ import {
   ImageBackground,
   TextInput,
   StyleSheet,
+  NativeModules,
 } from 'react-native';
 
 import {useTheme} from 'react-native-paper';
@@ -27,39 +28,80 @@ import {
 } from '../../slices/navSlice';
 import {useSelector} from 'react-redux';
 import {useDispatch} from 'react-redux';
+// import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
-// import ImagePicker from 'react-native-image-crop-picker';
+//import ImagePicker from 'react-native-image-crop-picker';
+var ImagePicker = NativeModules.ImageCropPicker;
 
 const EditProfileScreen = () => {
-  // const [image, setImage] = useState('https://api.adorable.io/avatars/80/abott@adorable.png');
+  const [image, setImage] = useState(
+    'https://api.adorable.io/avatars/80/abott@adorable.png',
+  );
   const {colors} = useTheme();
   const dispatch = useDispatch();
+  const [imageUri, setimageUri] = useState(
+    'https://api.adorable.io/avatars/80/abott@adorable.png',
+  );
 
+  const takePhotoFromCamera = () => {
+    ImagePicker.openCamera({
+      compressImageMaxWidth: 300,
+      compressImageMaxHeight: 300,
+      cropping: true,
+      compressImageQuality: 0.7,
+    }).then((image) => {
+      console.log(image);
+      setImage(image.path);
+      bs.current.snapTo(1);
+    });
+  };
   // const takePhotoFromCamera = () => {
-  //   ImagePicker.openCamera({
-  //     compressImageMaxWidth: 300,
-  //     compressImageMaxHeight: 300,
-  //     cropping: true,
-  //     compressImageQuality: 0.7
-  //   }).then(image => {
-  //     console.log(image);
-  //     setImage(image.path);
-  //     this.bs.current.snapTo(1);
+  //   const options = {
+  //     storageOptions: {
+  //       path: 'images',
+  //       mediaType: 'photo',
+  //     },
+  //     includeBase64: true,
+  //   };
+
+  //   launchCamera(options, (response) => {
+  //     console.log('Response = ', response);
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker');
+  //     } else if (response.error) {
+  //       console.log('ImagePicker Error: ', response.errorMessage);
+  //     } else {
+  //       // You can also display the image using data:
+  //       const source = {uri: 'data:image/jpeg;base64,' + response.base64};
+  //       setimageUri(source);
+  //       this.bs.current.snapTo(1);
+  //     }
   //   });
-  // }
+  // };
+
+  const choosePhotoFromLibrary = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 300,
+      cropping: true,
+      compressImageQuality: 0.7,
+    }).then((image) => {
+      console.log(image);
+      setImage(image.path);
+      bs.current.snapTo(1);
+    });
+  };
 
   // const choosePhotoFromLibrary = () => {
-  //   ImagePicker.openPicker({
-  //     width: 300,
-  //     height: 300,
-  //     cropping: true,
-  //     compressImageQuality: 0.7
-  //   }).then(image => {
-  //     console.log(image);
-  //     setImage(image.path);
+  //   const options = {
+  //     mediaType: 'photo',
+  //   };
+
+  //   launchImageLibrary(options, (callBack) => {
+  //     console.log('Response = ', callBack);
   //     this.bs.current.snapTo(1);
   //   });
-  // }
+  // };
 
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -135,10 +177,18 @@ const EditProfileScreen = () => {
         <Text style={styles.panelTitle}>Upload Photo</Text>
         <Text style={styles.panelSubtitle}>Choose Your Profile Picture</Text>
       </View>
-      <TouchableOpacity style={styles.panelButton} onPress={() => {}}>
+      <TouchableOpacity
+        style={styles.panelButton}
+        onPress={() => {
+          takePhotoFromCamera();
+        }}>
         <Text style={styles.panelButtonTitle}>Take Photo</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.panelButton} onPress={() => {}}>
+      <TouchableOpacity
+        style={styles.panelButton}
+        onPress={() => {
+          choosePhotoFromLibrary();
+        }}>
         <Text style={styles.panelButtonTitle}>Choose From Library</Text>
       </TouchableOpacity>
       {Platform.OS === 'android' ? (
@@ -172,7 +222,7 @@ const EditProfileScreen = () => {
     <View style={styles.container}>
       <BottomSheet
         ref={bs}
-        snapPoints={[500, 0]}
+        snapPoints={[330, 0]}
         renderContent={renderInner}
         renderHeader={renderHeader}
         initialSnap={1}
@@ -196,7 +246,7 @@ const EditProfileScreen = () => {
               }}>
               <ImageBackground
                 source={{
-                  uri: 'https://api.adorable.io/avatars/80/abott@adorable.png',
+                  uri: image,
                 }}
                 style={{height: 100, width: 100}}
                 imageStyle={{borderRadius: 15}}>
