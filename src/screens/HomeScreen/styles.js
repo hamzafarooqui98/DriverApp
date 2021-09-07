@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   balanceButton: {
     position: 'absolute',
     backgroundColor: 'white',
-    width: 100,
+    width: 150,
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
@@ -58,10 +58,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalHeader: {
+    width: '100%',
+    height: 40,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   modalView: {
     margin: 20,
+    paddingTop: 0,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
@@ -75,17 +82,16 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  button: {
+  modalButton: {
     borderRadius: 20,
     padding: 10,
-    margin: 10,
     elevation: 2,
   },
   buttonOpen: {
     backgroundColor: '#F194FF',
   },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    backgroundColor: Colors.primary,
   },
   textStyle: {
     color: 'white',
@@ -95,6 +101,7 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
+    fontSize: 15,
   },
 });
 

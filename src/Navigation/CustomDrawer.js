@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, Pressable} from 'react-native';
+import {View, Text, Pressable, Image} from 'react-native';
 import {
   DrawerContentScrollView,
   DrawerItemList,
@@ -58,15 +58,14 @@ const CustomDrawer = (props) => {
             flexDirection: 'row',
             alignItems: 'center',
           }}>
-          <View
+          <Image
+            source={{uri: userInformation.avatar}}
             style={{
-              backgroundColor: Colors.secondary,
-              width: 50,
-              height: 50,
-              borderRadius: 25,
-              marginRight: 10,
-            }}
-          />
+              width: 60,
+              height: 60,
+              borderRadius: 10,
+              marginRight: 8,
+            }}></Image>
 
           <View>
             <Text style={{color: 'white', fontSize: 24}}>

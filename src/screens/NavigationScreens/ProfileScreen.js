@@ -76,13 +76,13 @@ const ProfileScreen = ({navigation}) => {
   });
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, {backgroundColor: 'white'}]}>
       <View style={{marginTop: 40}}>
         <View style={styles.userInfoSection}>
           <View style={{flexDirection: 'row', marginTop: 15}}>
             <Avatar.Image
               source={{
-                uri: 'https://api.adorable.io/avatars/80/abott@adorable.png',
+                uri: userInformation.avatar,
               }}
               size={80}
             />

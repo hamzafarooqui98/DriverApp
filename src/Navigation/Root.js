@@ -9,6 +9,7 @@ import Colors from '../constants/Colors';
 import ProfileScreen from '../screens/NavigationScreens/ProfileScreen';
 import EditProfileScreen from '../screens/NavigationScreens/EditProfileScreen';
 import PreBookNavigator from '../Navigation/PreBookStackNav';
+import Payment from '../screens/NavigationScreens/Payment';
 
 const Drawer = createDrawerNavigator();
 
@@ -37,19 +38,7 @@ const RootNavigator = (props) => {
       <Drawer.Screen name="Edit Profile" component={EditProfileScreen} />
       <Drawer.Screen name="Pre-Book" component={PreBookNavigator} />
 
-      {/* <Drawer.Screen
-        name="SignInScreen"
-        component={SignInScreen}
-        options={{
-          drawerLabel: () => null,
-          title: null,
-          drawerIcon: () => null,
-        }}
-      /> */}
-
-      <Drawer.Screen name="Wallet">
-        {() => <DummyScreen name={'Wallet'} />}
-      </Drawer.Screen>
+      <Drawer.Screen name="Payment" component={Payment} />
 
       <Drawer.Screen name="Settings">
         {() => <DummyScreen name={'Settings'} />}

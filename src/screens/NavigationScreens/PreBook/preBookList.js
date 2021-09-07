@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width,
     height,
-    backgroundColor: 'red',
     transform: [{translateY: height}],
     borderRadius: 32,
   },

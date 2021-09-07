@@ -7,6 +7,7 @@ import {
   TextInput,
   StyleSheet,
   NativeModules,
+  Pressable,
 } from 'react-native';
 
 import {useTheme} from 'react-native-paper';
@@ -14,6 +15,7 @@ import {useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
@@ -33,7 +35,7 @@ import {useDispatch} from 'react-redux';
 //import ImagePicker from 'react-native-image-crop-picker';
 var ImagePicker = NativeModules.ImageCropPicker;
 
-const EditProfileScreen = () => {
+const EditProfileScreen = ({navigation}) => {
   const [image, setImage] = useState(
     'https://api.adorable.io/avatars/80/abott@adorable.png',
   );
@@ -121,10 +123,11 @@ const EditProfileScreen = () => {
   const handleEdit = async (id) => {
     console.log('edit pressed');
     console.log(id);
+
     const res = await fetch(
       `https://planit-fyp.herokuapp.com/api/users/update/${id}`,
       {
-        method: 'PUT',
+        method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
@@ -135,6 +138,7 @@ const EditProfileScreen = () => {
           phone,
           city,
           country,
+          avatar: image,
         }),
       },
     );
@@ -168,6 +172,7 @@ const EditProfileScreen = () => {
       setEmail('');
       setCity('');
       setCountry('');
+      //setImage('');
     }
   };
 
@@ -377,6 +382,14 @@ const EditProfileScreen = () => {
           <Text style={styles.panelButtonTitle}>Submit</Text>
         </TouchableOpacity>
       </Animated.View>
+      <Pressable
+        onPress={() => {
+          navigation.toggleDrawer();
+          console.log('Hello drawer');
+        }}
+        style={[styles.roundButton, {top: 10, left: 10}]}>
+        <Entypo name={'menu'} size={24} color="#4a4a4a" />
+      </Pressable>
     </View>
   );
 };
@@ -469,5 +482,11 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 0 : -12,
     paddingLeft: 10,
     color: '#05375a',
+  },
+  roundButton: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 25,
   },
 });

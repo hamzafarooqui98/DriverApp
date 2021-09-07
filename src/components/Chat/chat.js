@@ -51,7 +51,7 @@ const Chat = () => {
           color: '#fff',
           iconStyle: {color: '#fff'},
         }}
-        centerComponent={{text: 'MY TITLE', style: {color: '#fff'}}}
+        centerComponent={{text: 'Chat', style: {color: '#fff'}}}
         rightComponent={
           <View
             style={{
@@ -65,7 +65,7 @@ const Chat = () => {
               color="#fff"
               style={{padding: 10}}
             />
-            <FontAwesome name={'whatsapp'} size={30} color="black" />
+            <FontAwesome name={'whatsapp'} size={30} color="white" />
           </View>
         }
       />

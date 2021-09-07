@@ -6,7 +6,11 @@ import {
   Pressable,
   Button,
   Modal,
+  Alert,
   StyleSheet,
+  TouchableOpacity,
+  Image,
+  TextInput,
 } from 'react-native';
 // import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
@@ -29,6 +33,9 @@ import {
 } from '../../slices/navSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
+
+import ModalPopUp from './modal.js';
+import Colors from '../../constants/Colors.js';
 //import {Button} from 'react-native-elements/dist/buttons/Button';
 
 // // Enable pusher logging - don't include this in production
@@ -56,6 +63,14 @@ const HomeScreen = (props) => {
   const [phone, setPhone] = useState('');
   const dispatch = useDispatch();
   const [val, setVal] = useState(false);
+  const [cost, setCost] = useState('0.00');
+  const [guideCost, setGuideCost] = useState('0.00');
+  const [balance, setBalance] = useState('0.00');
+  //const [modalVisible, setModalVisible] = useState(false);
+  const [visible, setVisible] = React.useState(false);
+  const [emit, setEmit] = useState(false);
+  const [number, onChangeNumber] = useState(null);
+  const [card, setCard] = useState(false);
   // const [currentRegion, setCurrentRegion] = useState({
   //   latitude: 30.3753,
   //   longitude: 69.3451,
@@ -119,6 +134,7 @@ const HomeScreen = (props) => {
     socket.emit('guide details', userInformation);
     console.log(myPosition);
     socket.emit('guide Location', myPosition);
+    setGuideCost(cost);
   };
 
   const onDecline = () => {
@@ -146,8 +162,8 @@ const HomeScreen = (props) => {
         ...order,
         distance: event.distance,
         duration: event.duration,
-        pickedUp: order.pickedUp || event.distance < 0.2,
-        isFinished: order.pickedUp && event.distance < 0.2,
+        pickedUp: order.pickedUp || event.distance < 0.8,
+        isFinished: order.pickedUp && event.distance < 0.8,
       });
     }
     mapRef.current.fitToCoordinates(event.coordinates, {
@@ -188,15 +204,30 @@ const HomeScreen = (props) => {
 
   useEffect(() => {
     console.log('Hello');
+    console.log('Hello world');
+    console.log('Python');
     console.log(userInformation);
     console.log(myPosition);
     socket = io('https://planit-fyp.herokuapp.com');
+
     socket.on('order details', (order) => {
       rejectBooking(order.data._id);
       console.log(myPosition);
     });
     getData();
     console.log('Helloo');
+
+    socket.on('payment method', (payment) => {
+      setCard(false);
+      setCard(true);
+      // setCard(true);
+    });
+
+    socket.on('payment card', (payment) => {
+      setEmit(false);
+      setEmit(true);
+      //setEmit(true);
+    });
     //   pusher = new Pusher('f4333a508bd2bce3771a', {
     //     cluster: 'ap2',
     //   });
@@ -240,6 +271,12 @@ const HomeScreen = (props) => {
     setIsOnline(!isOnline);
   };
 
+  const tripComplete = () => {
+    setVisible(true);
+    let modalOpen = true;
+    socket.emit('trip completed', modalOpen);
+  };
+
   const rejectBooking = async (orderId) => {
     // setReject(true);
     const res = await fetch(
@@ -247,11 +284,13 @@ const HomeScreen = (props) => {
     );
     const response = await res.json();
     console.log(response);
+    console.log(typeof response.order.cost.split('R')[1]);
+    setBalance(response.order.cost.split('R')[1]);
+    setCost(response.order.cost);
     setName(response.order.name);
     setPhone(response.order.phone);
     setOrigin(response.order.origin);
     setDestination(response.order.destination);
-    setModalVisible(true);
     setNewOrder({
       id: '1',
       type: 'UberX',
@@ -281,7 +320,120 @@ const HomeScreen = (props) => {
     if (order && order.isFinished) {
       return (
         <View style={{alignItems: 'center'}}>
-          <View
+          <ModalPopUp visible={visible}>
+            <View style={{alignItems: 'center'}}>
+              <View style={styles.modalHeader}>
+                <TouchableOpacity onPress={() => setVisible(false)}>
+                  <Image
+                    source={require('../../assets/x.png')}
+                    style={{height: 30, width: 30}}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={{alignItems: 'center'}}>
+              <Image
+                source={require('../../assets/success.png')}
+                style={{height: 150, width: 150, marginVertical: 10}}
+              />
+            </View>
+
+            <Text
+              style={{marginVertical: 30, fontSize: 20, textAlign: 'center'}}>
+              Congratulations registration was successful
+            </Text>
+          </ModalPopUp>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={emit}
+            onRequestClose={() => {
+              setEmit(!emit);
+            }}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Image
+                  source={require('../../assets/planiTMainLogo.png')}
+                  style={{width: 100, height: 100, borderRadius: 25, top: 0}}
+                />
+                <Text
+                  style={[
+                    styles.modalText,
+                    {
+                      fontWeight: 'bold',
+                      fontSize: 22,
+                    },
+                  ]}>
+                  Transaction
+                </Text>
+                <Text style={styles.modalText}>Fare : {cost}</Text>
+                <Text style={{textAlign: 'center', fontSize: 15}}>
+                  Cash Recieved:
+                </Text>
+                <TextInput
+                  style={{
+                    height: 40,
+                    marginBottom: 15,
+                    borderBottomWidth: 1,
+                    borderBottomColor: Colors.primary,
+                    padding: 10,
+                  }}
+                  onChangeText={onChangeNumber}
+                  value={number}
+                  placeholder="Amount"
+                  keyboardType="numeric"
+                />
+                <Text style={styles.modalText}>
+                  Balance :{' '}
+                  <Text style={{fontWeight: 'bold'}}>
+                    {number
+                      ? (number - Math.round(balance)).toString()
+                      : '0.00'}
+                  </Text>
+                </Text>
+                <Pressable
+                  style={[styles.modalButton, styles.buttonClose]}
+                  onPress={() => setEmit(!emit)}>
+                  <Text style={styles.textStyle}>Accept</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={card}
+            onRequestClose={() => {
+              setEmit(!card);
+            }}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Image
+                  source={require('../../assets/planiTMainLogo.png')}
+                  style={{width: 100, height: 100, borderRadius: 25, top: 0}}
+                />
+                <Text
+                  style={[
+                    styles.modalText,
+                    {
+                      fontWeight: 'bold',
+                      fontSize: 22,
+                    },
+                  ]}>
+                  Transaction
+                </Text>
+                <Text style={styles.modalText}>
+                  Amount recieved through card Successfully
+                </Text>
+                <Pressable
+                  style={[styles.modalButton, styles.buttonClose]}
+                  onPress={() => setEmit(!card)}>
+                  <Text style={styles.textStyle}>Done</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+          <Pressable
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -289,11 +441,14 @@ const HomeScreen = (props) => {
               backgroundColor: '#53A979',
               width: 200,
               padding: 10,
+            }}
+            onPress={() => {
+              tripComplete();
             }}>
             <Text style={{color: 'white', fontWeight: 'bold'}}>
               COMPLETE {order.type}
             </Text>
-          </View>
+          </Pressable>
           <Text style={styles.bottomText}>{order.user.name}</Text>
         </View>
       );
@@ -399,7 +554,8 @@ const HomeScreen = (props) => {
         onPress={() => console.warn('Balance')}
         style={styles.balanceButton}>
         <Text style={styles.balanceText}>
-          <Text style={{color: 'green'}}>Rs.</Text> 0.00
+          <Text style={{color: 'green'}}></Text>
+          {guideCost}
         </Text>
       </Pressable>
 
@@ -435,7 +591,12 @@ const HomeScreen = (props) => {
       </Pressable>
 
       <View style={styles.bottomContainer}>
-        <Ionicons name={'options'} size={30} color="#4a4a4a" />
+        <Pressable
+          onPress={() => {
+            tripComplete();
+          }}>
+          <Ionicons name={'options'} size={30} color="#4a4a4a" />
+        </Pressable>
         {renderBottomTitle()}
         <Pressable onPress={() => props.navigation.navigate('Chat')}>
           <Entypo name={'chat'} size={24} color="#4a4a4a" />
@@ -446,6 +607,116 @@ const HomeScreen = (props) => {
         style={[styles.roundButton, {bottom: 110, right: 10}]}>
         <Entypo name={'chat'} size={24} color="#4a4a4a" />
       </Pressable> */}
+        <ModalPopUp visible={visible}>
+          <View style={{alignItems: 'center'}}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={() => setVisible(false)}>
+                <Image
+                  source={require('../../assets/x.png')}
+                  style={{height: 30, width: 30}}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={{alignItems: 'center'}}>
+            <Image
+              source={require('../../assets/success.png')}
+              style={{height: 150, width: 150, marginVertical: 10}}
+            />
+          </View>
+
+          <Text style={{marginVertical: 30, fontSize: 20, textAlign: 'center'}}>
+            Congratulations registration was successful
+          </Text>
+        </ModalPopUp>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={emit}
+          onRequestClose={() => {
+            setEmit(!emit);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Image
+                source={require('../../assets/planiTMainLogo.png')}
+                style={{width: 100, height: 100, borderRadius: 25, top: 0}}
+              />
+              <Text
+                style={[
+                  styles.modalText,
+                  {
+                    fontWeight: 'bold',
+                    fontSize: 22,
+                  },
+                ]}>
+                Transaction
+              </Text>
+              <Text style={styles.modalText}>Fare : {cost}</Text>
+              <Text style={{textAlign: 'center', fontSize: 15}}>
+                Cash Recieved:
+              </Text>
+              <TextInput
+                style={{
+                  height: 40,
+                  marginBottom: 15,
+                  borderBottomWidth: 1,
+                  borderBottomColor: Colors.primary,
+                  padding: 10,
+                }}
+                onChangeText={onChangeNumber}
+                value={number}
+                placeholder="Amount"
+                keyboardType="numeric"
+              />
+              <Text style={styles.modalText}>
+                Balance :{' '}
+                <Text style={{fontWeight: 'bold'}}>
+                  {number ? (number - Math.round(balance)).toString() : '0.00'}
+                </Text>
+              </Text>
+              <Pressable
+                style={[styles.modalButton, styles.buttonClose]}
+                onPress={() => setEmit(!emit)}>
+                <Text style={styles.textStyle}>Accept</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={card}
+          onRequestClose={() => {
+            setCard(!card);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Image
+                source={require('../../assets/planiTMainLogo.png')}
+                style={{width: 100, height: 100, borderRadius: 25, top: 0}}
+              />
+              <Text
+                style={[
+                  styles.modalText,
+                  {
+                    fontWeight: 'bold',
+                    fontSize: 22,
+                  },
+                ]}>
+                Transaction
+              </Text>
+              <Text style={styles.modalText}>
+                Amount recieved through card Successfully
+              </Text>
+              <Pressable
+                style={[styles.modalButton, styles.buttonClose]}
+                onPress={() => setCard(!card)}>
+                <Text style={styles.textStyle}>Done</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
       </View>
       {/* 
       <Modal
