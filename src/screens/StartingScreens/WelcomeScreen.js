@@ -14,6 +14,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const WelcomeScreen = (props) => {
   const navigation = useNavigation();
 
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@storage_Key');
+      const obj = JSON.parse(value);
+      if (value !== null) {
+        navigation.navigate('RootScreen', {
+          screen: 'Home',
+          params: {
+            screen: 'Home',
+          },
+        });
+      }
+    } catch (e) {
+      // error reading value
+    }
+  };
+
+  React.useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.firstRow}>

@@ -16,73 +16,72 @@ import {
 } from 'react-native';
 const {width, height} = Dimensions.get('screen');
 import faker from 'faker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {selectUser} from '../../slices/navSlice';
+import {useSelector} from 'react-redux';
 // import {Title} from 'react-native-paper';
 
-// faker.seed(10);
-// const DATA = [...Array(30).keys()].map((_, i) => {
-//   return {
-//     key: faker.datatype.uuid(),
-//     image: `https://randomuser.me/api/portraits/${faker.helpers.randomize([
-//       'women',
-//       'men',
-//     ])}/${faker.datatype.number(60)}.jpg`,
-//     name: faker.name.findName(),
-//     jobTitle: faker.name.jobTitle(),
-//     email: faker.internet.email(),
-//   };
-// });
+faker.seed(10);
+const DATA = [...Array(30).keys()].map((_, i) => {
+  return {
+    key: faker.datatype.uuid(),
+    image: `https://randomuser.me/api/portraits/${faker.helpers.randomize([
+      'women',
+      'men',
+    ])}/${faker.datatype.number(60)}.jpg`,
+    name: faker.name.findName(),
+    jobTitle: faker.name.jobTitle(),
+    email: faker.internet.email(),
+  };
+});
 
 const SPACING = 20;
 const AVATAR_SIZE = 70;
 const ITEM_SIZE = AVATAR_SIZE + SPACING * 3;
 
-const TripsHistoryComponent = () => {
+const YourTripsScreen = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current;
+  const userInformation = useSelector(selectUser);
   const [data, setData] = React.useState([]);
-  const getData = async () => {
-    try {
-      const value = await AsyncStorage.getItem('@storage_Key');
-      if (value !== null) {
-        // value previously stored
-        // console.log(value);
-        const val = JSON.parse(value);
-        const userId = val.id;
-        const res = await fetch(
-          `https://planit-fyp.herokuapp.com/api/orders/getOrderByUserId/${userId}`,
-        );
-        const response = await res.json();
-        // console.log(response.data);
-        // const orders = response.data.map((x) => x);
-        // console.log(orders);
-        const orders = response.data.map((x) => {
-          return {
-            key: x._id,
-            image: x.avatar,
-            name: x.name,
-            phone: x.phone,
-            origin: x.origin,
-            destination: x.destination,
-          };
-        });
-        //console.log(orders);
-        setData(orders);
-      }
-    } catch (e) {
-      // error reading value
-    }
+
+  const getData = async (id) => {
+    // value previously stored
+    // console.log(value);
+    //const val = JSON.parse(value);
+    //const userId = val.id;
+    const res = await fetch(
+      `https://planit-fyp.herokuapp.com/api/orders/getOrderByUserId/${id}`,
+    );
+    const response = await res.json();
+    console.log(response);
+    //console.log(userInformation.id);
+    // console.log(response.data);
+    // const orders = response.data.map((x) => x);
+    // console.log(orders);
+    const orders = response.data.map((x) => {
+      return {
+        key: x._id,
+        image: x.avatar,
+        name: x.name,
+        phone: x.phone,
+        origin: x.origin,
+        destination: x.destination,
+      };
+    });
+    //console.log(orders);
+    setData(orders);
   };
 
   React.useEffect(() => {
-    getData();
+    getData(userInformation.id);
+    console.log(userInformation);
+    //console.log(data);
     // console.log('Hello world');
-  });
+  }, []);
 
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       <Image
-        source={require('../../assets/planiTMainLogo.png')}
+        source={require('../../assets/MainLogoPlaniT.png')}
         // style={StyleSheet.absoluteFillObject}
         style={{
           bottom: 0,
@@ -148,7 +147,7 @@ const TripsHistoryComponent = () => {
                 transform: [{scale}],
               }}>
               <Image
-                source={{uri: item.image}}
+                source={{uri: userInformation.avatar}}
                 style={{
                   width: AVATAR_SIZE,
                   height: AVATAR_SIZE,
@@ -161,10 +160,7 @@ const TripsHistoryComponent = () => {
                   {item.name}
                 </Text>
                 <Text style={{fontSize: 16, opacity: 0.7, flexShrink: 1}}>
-                  Pickup: {item.origin}
-                </Text>
-                <Text style={{fontSize: 16, opacity: 0.7, flexShrink: 1}}>
-                  Destination: {item.destination}
+                  {item.origin}
                 </Text>
                 <Text
                   style={{
@@ -173,15 +169,16 @@ const TripsHistoryComponent = () => {
                     color: '#0099cc',
                     flexWrap: 'wrap',
                   }}>
-                  {item.phone}
+                  {item.destination}
                 </Text>
               </View>
             </Animated.View>
           );
         }}
       />
+      <StatusBar hidden />
     </View>
   );
 };
 
-export default TripsHistoryComponent;
+export default YourTripsScreen;

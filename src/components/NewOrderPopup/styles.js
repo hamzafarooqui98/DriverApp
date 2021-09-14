@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import profile from '../../assets/taimoor.jpg';
 
 const styles = StyleSheet.create({
   root: {
@@ -29,6 +30,12 @@ const styles = StyleSheet.create({
     color: 'lightgrey',
     fontSize: 20,
     marginHorizontal: 10,
+  },
+  places: {
+    width: '40%',
+  },
+  text: {
+    textAlign: 'center',
   },
   row: {
     flexDirection: 'row',

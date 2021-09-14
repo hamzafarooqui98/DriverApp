@@ -9,15 +9,8 @@ import Colors from '../constants/Colors';
 import ProfileScreen from '../screens/NavigationScreens/ProfileScreen';
 import EditProfileScreen from '../screens/NavigationScreens/EditProfileScreen';
 import PreBookNavigator from '../Navigation/PreBookStackNav';
-import Payment from '../screens/NavigationScreens/Payment';
 
 const Drawer = createDrawerNavigator();
-
-const DummyScreen = (props) => (
-  <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-    <Text>{props.name}</Text>
-  </View>
-);
 
 const RootNavigator = (props) => {
   return (
@@ -30,19 +23,13 @@ const RootNavigator = (props) => {
       screenOptions={{
         headerShown: false,
       }}>
-      <Drawer.Screen name={'Home' || 'RootScreen'} component={HomeNavigator} />
+      <Drawer.Screen name={'Home'} component={HomeNavigator} />
 
       <Drawer.Screen name="Your Trips" component={TripsHistoryComponent} />
 
       <Drawer.Screen name="Profile" component={ProfileScreen} />
       <Drawer.Screen name="Edit Profile" component={EditProfileScreen} />
       <Drawer.Screen name="Pre-Book" component={PreBookNavigator} />
-
-      <Drawer.Screen name="Payment" component={Payment} />
-
-      <Drawer.Screen name="Settings">
-        {() => <DummyScreen name={'Settings'} />}
-      </Drawer.Screen>
     </Drawer.Navigator>
   );
 };

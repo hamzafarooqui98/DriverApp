@@ -123,6 +123,7 @@ const EditProfileScreen = ({navigation}) => {
   const handleEdit = async (id) => {
     console.log('edit pressed');
     console.log(id);
+    console.log(image.path);
 
     const res = await fetch(
       `https://planit-fyp.herokuapp.com/api/users/update/${id}`,

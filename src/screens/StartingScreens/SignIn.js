@@ -16,16 +16,13 @@ import Feather from 'react-native-vector-icons/Feather';
 
 import {useTheme} from 'react-native-paper';
 
-//import {LinearGradient} from 'expo-linear-gradient';
+//import { LinearGradient } from "expo-linear-gradient";
 import Colors from '../../constants/Colors';
 import {useDispatch} from 'react-redux';
-import {setUser} from '../../slices/navSlice';
+import {setPayment, setUser} from '../../slices/navSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// import { AuthContext } from "../components/context";
-
-// import Users from "../model/users";
-
-const SignInScreen = ({navigation}) => {
+const SignIn = ({navigation}) => {
   const [data, setData] = React.useState({
     username: '',
     password: '',
@@ -121,6 +118,14 @@ const SignInScreen = ({navigation}) => {
     signIn(foundUser);
   };
 
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem('@storage_Key', JSON.stringify(value));
+    } catch (e) {
+      // saving error
+    }
+  };
+
   const handleLogin = async () => {
     const res = await fetch(
       `https://planit-fyp.herokuapp.com/api/users/login`,
@@ -141,6 +146,7 @@ const SignInScreen = ({navigation}) => {
     //storeData(response.name);
 
     if (response.token) {
+      storeData(response);
       setToken(response.token);
       dispatch(
         setUser({
@@ -155,6 +161,7 @@ const SignInScreen = ({navigation}) => {
         }),
       );
       navigation.navigate('RootScreen');
+      // navigation.navigate("PushNotifications");
 
       setEmail('');
       setPassword('');
@@ -259,7 +266,7 @@ const SignInScreen = ({navigation}) => {
         {data.isValidPassword ? null : (
           <Animatable.View animation="fadeInLeft" duration={500}>
             <Text style={styles.errorMsg}>
-              Password must be 8 characters long.
+              {/* Password must be 8 characters long. */}
             </Text>
           </Animatable.View>
         )}
@@ -316,7 +323,7 @@ const SignInScreen = ({navigation}) => {
   );
 };
 
-export default SignInScreen;
+export default SignIn;
 
 const styles = StyleSheet.create({
   container: {

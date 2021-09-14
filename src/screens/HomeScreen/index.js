@@ -30,6 +30,8 @@ import {
   setDestination,
   selectUser,
   setGuideLocation,
+  setUser,
+  selectPreBookOrder,
 } from '../../slices/navSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
@@ -58,6 +60,8 @@ const HomeScreen = (props) => {
   const [order, setOrder] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [name, setName] = useState('');
+  const [guideName, setGuideName] = useState('');
+  const [guideId, setGuideId] = useState('');
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
   const [phone, setPhone] = useState('');
@@ -68,9 +72,16 @@ const HomeScreen = (props) => {
   const [balance, setBalance] = useState('0.00');
   //const [modalVisible, setModalVisible] = useState(false);
   const [visible, setVisible] = React.useState(false);
-  const [emit, setEmit] = useState(false);
+  const [emit, setEmit] = React.useState(false);
   const [number, onChangeNumber] = useState(null);
-  const [card, setCard] = useState(false);
+  const [card, setCard] = React.useState(false);
+  const [showCash, setShowCash] = React.useState(false);
+  const [showCard, setShowCard] = React.useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [show, setShow] = React.useState(true);
+  const [category, setCategory] = useState('');
+  const [orderId, setOrderId] = useState('');
+  const [userDuration, setUserDuration] = useState('1');
   // const [currentRegion, setCurrentRegion] = useState({
   //   latitude: 30.3753,
   //   longitude: 69.3451,
@@ -79,31 +90,8 @@ const HomeScreen = (props) => {
   // });
   // const [showOrder, setShowOrder] = useState(false);
   const userInformation = useSelector(selectUser);
-  const [newOrder, setNewOrder] = useState({
-    // id: '1',
-    // type: 'UberX',
-    // originLatitude: 24.915003728618323,
-    // originLongitude: 67.12725490091005,
-    // destLatitude: 24.93257509249255,
-    // destLongitude: 67.12723446534324,
-    // user: {
-    //   rating: 4.5,
-    //   name: 'Hamza',
-    // },
-    // id: '1',
-    // type: 'UberX',
-    // orgin: '',
-    // destination: '',
-    // originLatitude: '',
-    // originLongitude: '',
-    // destLatitude: '',
-    // destLongitude: '',
-    // user: {
-    //   rating: 4.5,
-    //   name: '',
-    //   phone: '',
-    // },
-  });
+  const preBookInformation = useSelector(selectPreBookOrder);
+  const [newOrder, setNewOrder] = useState({});
 
   // Geolocation.getCurrentPosition((info) =>
   //   setCurrentRegion({
@@ -122,12 +110,12 @@ const HomeScreen = (props) => {
       latitude: event.nativeEvent.coordinate.latitude,
       longitude: event.nativeEvent.coordinate.longitude,
     });
-    val
-      ? setTimeout(() => {
-          //setMyPosition(null);
-          socket.emit('guide Location', myPosition);
-        }, 5000)
-      : {};
+    // val
+    //   ? setTimeout(() => {
+    //       //setMyPosition(null);
+    //       socket.emit('guide Location', myPosition);
+    //     }, 5000)
+    //   : {};
   };
 
   const confirmBooking = async () => {
@@ -141,10 +129,46 @@ const HomeScreen = (props) => {
     setNewOrder(null);
   };
 
+  const handleEditOrder = async (id) => {
+    //   setVal(true);
+
+    const res = await fetch(
+      `https://planit-fyp.herokuapp.com/api/orders/updateOrder/${id}`,
+      {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          guideName,
+          guideId,
+        }),
+      },
+    );
+    const response = await res.json();
+    console.log(response);
+    // if (response) navigation.navigate("PreBookDateNTime");
+    // if (response) alert("Order updated");
+    // socket.emit("order details", response);
+    // socket.emit("order details", {
+    //   Name: response.data.name,
+    //   Phone: response.data.phone,
+    //   Origin: response.data.origin,
+    //   Destination: response.data.destination,
+    //   OriginLatitude: response.data.originlatitude,
+    //   OriginLongitude: response.data.originLongitude,
+    //   DestLatitude: response.data.destLatitude,
+    //   DestLongitude: response.data.destLongitude,
+    // });
+  };
+
   const onAccept = (nOrder) => {
     //console.log('Han bhai', nOrder);
-    setOrder(nOrder);
+    if (category == 'Live') setOrder(nOrder);
+    //setOrder(nOrder);
     setNewOrder(null);
+    handleEditOrder(orderId);
     confirmBooking();
     setVal(true);
 
@@ -192,10 +216,24 @@ const HomeScreen = (props) => {
   const getData = async () => {
     try {
       const value = await AsyncStorage.getItem('@storage_Key');
+      const obj = JSON.parse(value);
       if (value !== null) {
         // value previously stored
-        console.log(value);
-        console.log('Helloo');
+        setGuideName(obj.name);
+        setGuideId(obj.id);
+        dispatch(
+          setUser({
+            name: obj.name,
+            phone: obj.phone,
+            token: obj.token,
+            email: obj.email,
+            id: obj.id,
+            city: obj.city,
+            country: obj.country,
+            avatar: obj.avatar,
+          }),
+        );
+        console.log(obj);
       }
     } catch (e) {
       // error reading value
@@ -203,29 +241,44 @@ const HomeScreen = (props) => {
   };
 
   useEffect(() => {
-    console.log('Hello');
-    console.log('Hello world');
-    console.log('Python');
-    console.log(userInformation);
+    getData();
+    //  console.log('Hello worlds');
+    console.log('Hwelllo');
+    //console.log(preOrder);
+    //console.log('Hello');
+    console.log(preBookInformation);
+    if (preBookInformation) {
+      setOrder(preBookInformation);
+    }
+    // console.log('Hello world');
+    // console.log('Python');
+    // console.log(userInformation);
     console.log(myPosition);
     socket = io('https://planit-fyp.herokuapp.com');
 
     socket.on('order details', (order) => {
       rejectBooking(order.data._id);
+      setOrderId(order.data._id);
       console.log(myPosition);
     });
-    getData();
+
     console.log('Helloo');
 
     socket.on('payment method', (payment) => {
-      setCard(false);
-      setCard(true);
+      // setCard(false);
+      // setShowCard(true);
       // setCard(true);
+      // setCard(true);
+      setShowModal(true);
+      setCard(true);
     });
 
     socket.on('payment card', (payment) => {
-      setEmit(false);
+      setShowModal(true);
       setEmit(true);
+      // setEmit(false);
+      // setShowCash(true);
+      // setEmit(true);
       //setEmit(true);
     });
     //   pusher = new Pusher('f4333a508bd2bce3771a', {
@@ -262,7 +315,7 @@ const HomeScreen = (props) => {
     //     }));
     //     setShowOrder(true);
     //   });
-  }, []);
+  }, [preBookInformation]);
 
   const pickupUser = () => {
     const guidePosition = null;
@@ -271,10 +324,21 @@ const HomeScreen = (props) => {
     setIsOnline(!isOnline);
   };
 
+  const close = () => {
+    setShowModal(!showModal);
+    setEmit(false);
+    setCard(false);
+    setOrder(null);
+    setCost('0.00');
+    setGuideCost('0.00');
+  };
+
   const tripComplete = () => {
     setVisible(true);
-    let modalOpen = true;
-    socket.emit('trip completed', modalOpen);
+    // setEmit(false);
+    // setCard(false);
+
+    socket.emit('trip completed', show);
   };
 
   const rejectBooking = async (orderId) => {
@@ -285,12 +349,16 @@ const HomeScreen = (props) => {
     const response = await res.json();
     console.log(response);
     console.log(typeof response.order.cost.split('R')[1]);
-    setBalance(response.order.cost.split('R')[1]);
-    setCost(response.order.cost);
+    response.order.category == 'Live'
+      ? setBalance(response.order.cost.split('R')[1])
+      : null;
+    response.order.category == 'Live' ? setCost(response.order.cost) : null;
     setName(response.order.name);
     setPhone(response.order.phone);
     setOrigin(response.order.origin);
     setDestination(response.order.destination);
+    setCategory(response.order.category);
+    setUserDuration(response.order.duration);
     setNewOrder({
       id: '1',
       type: 'UberX',
@@ -320,6 +388,23 @@ const HomeScreen = (props) => {
     if (order && order.isFinished) {
       return (
         <View style={{alignItems: 'center'}}>
+          <Pressable
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#53A979',
+              width: 200,
+              padding: 10,
+            }}
+            onPress={() => {
+              tripComplete();
+            }}>
+            <Text style={{color: 'white', fontWeight: 'bold'}}>
+              Complete {order.type}
+            </Text>
+          </Pressable>
+          <Text style={styles.bottomText}>{order.user.name}</Text>
           <ModalPopUp visible={visible}>
             <View style={{alignItems: 'center'}}>
               <View style={styles.modalHeader}>
@@ -340,116 +425,95 @@ const HomeScreen = (props) => {
 
             <Text
               style={{marginVertical: 30, fontSize: 20, textAlign: 'center'}}>
-              Congratulations registration was successful
+              Congratulations Trip was successful
             </Text>
           </ModalPopUp>
           <Modal
             animationType="slide"
             transparent={true}
-            visible={emit}
+            visible={showModal}
             onRequestClose={() => {
-              setEmit(!emit);
+              close();
             }}>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <Image
-                  source={require('../../assets/planiTMainLogo.png')}
-                  style={{width: 100, height: 100, borderRadius: 25, top: 0}}
-                />
-                <Text
-                  style={[
-                    styles.modalText,
-                    {
-                      fontWeight: 'bold',
-                      fontSize: 22,
-                    },
-                  ]}>
-                  Transaction
-                </Text>
-                <Text style={styles.modalText}>Fare : {cost}</Text>
-                <Text style={{textAlign: 'center', fontSize: 15}}>
-                  Cash Recieved:
-                </Text>
-                <TextInput
-                  style={{
-                    height: 40,
-                    marginBottom: 15,
-                    borderBottomWidth: 1,
-                    borderBottomColor: Colors.primary,
-                    padding: 10,
-                  }}
-                  onChangeText={onChangeNumber}
-                  value={number}
-                  placeholder="Amount"
-                  keyboardType="numeric"
-                />
-                <Text style={styles.modalText}>
-                  Balance :{' '}
-                  <Text style={{fontWeight: 'bold'}}>
-                    {number
-                      ? (number - Math.round(balance)).toString()
-                      : '0.00'}
+            {emit && (
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <Image
+                    source={require('../../assets/planiTMainLogo.png')}
+                    style={{width: 100, height: 100, borderRadius: 25, top: 0}}
+                  />
+                  <Text
+                    style={[
+                      styles.modalText,
+                      {
+                        fontWeight: 'bold',
+                        fontSize: 22,
+                      },
+                    ]}>
+                    Transaction
                   </Text>
-                </Text>
-                <Pressable
-                  style={[styles.modalButton, styles.buttonClose]}
-                  onPress={() => setEmit(!emit)}>
-                  <Text style={styles.textStyle}>Accept</Text>
-                </Pressable>
+                  <Text style={styles.modalText}>Fare : {cost}</Text>
+                  <Text style={{textAlign: 'center', fontSize: 15}}>
+                    Cash Recieved:
+                  </Text>
+                  <TextInput
+                    style={{
+                      height: 40,
+                      marginBottom: 15,
+                      borderBottomWidth: 1,
+                      borderBottomColor: Colors.primary,
+                      padding: 10,
+                    }}
+                    onChangeText={onChangeNumber}
+                    value={number}
+                    placeholder="Amount"
+                    keyboardType="numeric"
+                  />
+                  <Text style={styles.modalText}>
+                    Balance :{' '}
+                    <Text style={{fontWeight: 'bold'}}>
+                      {number
+                        ? (number - Math.round(balance)).toString()
+                        : '0.00'}
+                    </Text>
+                  </Text>
+                  <Pressable
+                    style={[styles.modalButton, styles.buttonClose]}
+                    onPress={() => close()}>
+                    <Text style={styles.textStyle}>Accept</Text>
+                  </Pressable>
+                </View>
               </View>
-            </View>
-          </Modal>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={card}
-            onRequestClose={() => {
-              setEmit(!card);
-            }}>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <Image
-                  source={require('../../assets/planiTMainLogo.png')}
-                  style={{width: 100, height: 100, borderRadius: 25, top: 0}}
-                />
-                <Text
-                  style={[
-                    styles.modalText,
-                    {
-                      fontWeight: 'bold',
-                      fontSize: 22,
-                    },
-                  ]}>
-                  Transaction
-                </Text>
-                <Text style={styles.modalText}>
-                  Amount recieved through card Successfully
-                </Text>
-                <Pressable
-                  style={[styles.modalButton, styles.buttonClose]}
-                  onPress={() => setEmit(!card)}>
-                  <Text style={styles.textStyle}>Done</Text>
-                </Pressable>
+            )}
+            {card && (
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <Image
+                    source={require('../../assets/planiTMainLogo.png')}
+                    style={{width: 100, height: 100, borderRadius: 25, top: 0}}
+                  />
+                  <Text
+                    style={[
+                      styles.modalText,
+                      {
+                        fontWeight: 'bold',
+                        fontSize: 22,
+                      },
+                    ]}>
+                    Transaction
+                  </Text>
+                  <Text style={styles.modalText}>
+                    Amount recieved through card Successfully
+                  </Text>
+                  <Pressable
+                    style={[styles.modalButton, styles.buttonClose]}
+                    onPress={() => close()}>
+                    <Text style={styles.textStyle}>Done</Text>
+                  </Pressable>
+                </View>
               </View>
-            </View>
+            )}
           </Modal>
-          <Pressable
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: '#53A979',
-              width: 200,
-              padding: 10,
-            }}
-            onPress={() => {
-              tripComplete();
-            }}>
-            <Text style={{color: 'white', fontWeight: 'bold'}}>
-              COMPLETE {order.type}
-            </Text>
-          </Pressable>
-          <Text style={styles.bottomText}>{order.user.name}</Text>
         </View>
       );
     }
@@ -607,7 +671,7 @@ const HomeScreen = (props) => {
         style={[styles.roundButton, {bottom: 110, right: 10}]}>
         <Entypo name={'chat'} size={24} color="#4a4a4a" />
       </Pressable> */}
-        <ModalPopUp visible={visible}>
+        {/* <ModalPopUp visible={visible}>
           <View style={{alignItems: 'center'}}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setVisible(false)}>
@@ -632,58 +696,90 @@ const HomeScreen = (props) => {
         <Modal
           animationType="slide"
           transparent={true}
-          visible={emit}
+          visible={showModal}
           onRequestClose={() => {
-            setEmit(!emit);
+            close();
           }}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Image
-                source={require('../../assets/planiTMainLogo.png')}
-                style={{width: 100, height: 100, borderRadius: 25, top: 0}}
-              />
-              <Text
-                style={[
-                  styles.modalText,
-                  {
-                    fontWeight: 'bold',
-                    fontSize: 22,
-                  },
-                ]}>
-                Transaction
-              </Text>
-              <Text style={styles.modalText}>Fare : {cost}</Text>
-              <Text style={{textAlign: 'center', fontSize: 15}}>
-                Cash Recieved:
-              </Text>
-              <TextInput
-                style={{
-                  height: 40,
-                  marginBottom: 15,
-                  borderBottomWidth: 1,
-                  borderBottomColor: Colors.primary,
-                  padding: 10,
-                }}
-                onChangeText={onChangeNumber}
-                value={number}
-                placeholder="Amount"
-                keyboardType="numeric"
-              />
-              <Text style={styles.modalText}>
-                Balance :{' '}
-                <Text style={{fontWeight: 'bold'}}>
-                  {number ? (number - Math.round(balance)).toString() : '0.00'}
+          {emit && (
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Image
+                  source={require('../../assets/planiTMainLogo.png')}
+                  style={{width: 100, height: 100, borderRadius: 25, top: 0}}
+                />
+                <Text
+                  style={[
+                    styles.modalText,
+                    {
+                      fontWeight: 'bold',
+                      fontSize: 22,
+                    },
+                  ]}>
+                  Transaction
                 </Text>
-              </Text>
-              <Pressable
-                style={[styles.modalButton, styles.buttonClose]}
-                onPress={() => setEmit(!emit)}>
-                <Text style={styles.textStyle}>Accept</Text>
-              </Pressable>
+                <Text style={styles.modalText}>Fare : {cost}</Text>
+                <Text style={{textAlign: 'center', fontSize: 15}}>
+                  Cash Recieved:
+                </Text>
+                <TextInput
+                  style={{
+                    height: 40,
+                    marginBottom: 15,
+                    borderBottomWidth: 1,
+                    borderBottomColor: Colors.primary,
+                    padding: 10,
+                  }}
+                  onChangeText={onChangeNumber}
+                  value={number}
+                  placeholder="Amount"
+                  keyboardType="numeric"
+                />
+                <Text style={styles.modalText}>
+                  Balance :{' '}
+                  <Text style={{fontWeight: 'bold'}}>
+                    {number
+                      ? (number - Math.round(balance)).toString()
+                      : '0.00'}
+                  </Text>
+                </Text>
+                <Pressable
+                  style={[styles.modalButton, styles.buttonClose]}
+                  onPress={() => close()}>
+                  <Text style={styles.textStyle}>Accept</Text>
+                </Pressable>
+              </View>
             </View>
-          </View>
-        </Modal>
-        <Modal
+          )}
+          {card && (
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Image
+                  source={require('../../assets/planiTMainLogo.png')}
+                  style={{width: 100, height: 100, borderRadius: 25, top: 0}}
+                />
+                <Text
+                  style={[
+                    styles.modalText,
+                    {
+                      fontWeight: 'bold',
+                      fontSize: 22,
+                    },
+                  ]}>
+                  Transaction
+                </Text>
+                <Text style={styles.modalText}>
+                  Amount recieved through card Successfully
+                </Text>
+                <Pressable
+                  style={[styles.modalButton, styles.buttonClose]}
+                  onPress={() => close()}>
+                  <Text style={styles.textStyle}>Done</Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
+        </Modal> */}
+        {/* <Modal
           animationType="slide"
           transparent={true}
           visible={card}
@@ -716,7 +812,7 @@ const HomeScreen = (props) => {
               </Pressable>
             </View>
           </View>
-        </Modal>
+        </Modal> */}
       </View>
       {/* 
       <Modal
@@ -753,7 +849,7 @@ const HomeScreen = (props) => {
       {newOrder?.id && (
         <NewOrderPopup
           newOrder={newOrder}
-          duration={2}
+          duration={userDuration}
           distance={0.5}
           onDecline={onDecline}
           onAccept={() => onAccept(newOrder)}

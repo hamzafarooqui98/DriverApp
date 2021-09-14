@@ -32,6 +32,7 @@ import TermsOfUseScreen from './src/screens/StartingScreens/TermsOfUseScreen';
 import RootNavigator from './src/Navigation/Root';
 import SignInScreen from './src/screens/StartingScreens/SignIn';
 import {AuthContext} from './src/components/Context';
+import AuthScreen from './src/Navigation/AuthScreen';
 
 navigator.geolocation = require('@react-native-community/geolocation');
 
@@ -79,9 +80,8 @@ const App: () => React$Node = () => {
       const value = await AsyncStorage.getItem('@storage_Key');
       if (value !== null) {
         // value previously stored
-        const val = JSON.parse(value);
-        console.log(val);
-        setToken(val.token);
+        const obj = JSON.parse(value);
+        setToken(obj.token);
         // console.log(val.name);
         // console.log(val);
       }
@@ -112,41 +112,17 @@ const App: () => React$Node = () => {
               style={{flex: 1}}
               keyboardVerticalOffset={Platform.OS === 'ios' ? -64 : 0}>
               {/* {token !== null ? ( */}
+
               <Stack.Navigator
                 screenOptions={{
                   headerShown: false,
                 }}>
                 <Stack.Screen
-                  name="WelcomeScreen"
-                  component={WelcomeScreen}
+                  name="AuthScreen"
+                  component={AuthScreen}
                   options={{
                     headerShown: false,
                   }}
-                />
-
-                <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
-                <Stack.Screen name="SignInScreen" component={SignInScreen} />
-
-                <Stack.Screen
-                  name="EnterPinScreen"
-                  component={EnterPinScreen}
-                />
-
-                <Stack.Screen
-                  name="ResetPinScreen"
-                  component={ResetPinScreen}
-                />
-
-                <Stack.Screen
-                  name="ResetSuccessScreen"
-                  component={ResetSuccessScreen}
-                />
-
-                <Stack.Screen name="SuccessScreen" component={SuccessScreen} />
-                <Stack.Screen
-                  name="TermsOfUseScreen"
-                  component={TermsOfUseScreen}
-                  options={{title: 'Terms of Use'}}
                 />
                 <Stack.Screen
                   name="RootScreen"
@@ -155,9 +131,7 @@ const App: () => React$Node = () => {
                     headerShown: false,
                   }}
                 />
-                {/* ) : ( */}
               </Stack.Navigator>
-              {/* )} */}
             </KeyboardAvoidingView>
           </SafeAreaView>
         </NavigationContainer>

@@ -16,10 +16,12 @@ const CustomDrawer = (props) => {
   const [name, setName] = useState('');
   const {signOut} = React.useContext(AuthContext);
   const userInformation = useSelector(selectUser);
+  const navigation = useNavigation();
 
   const removeData = async () => {
     try {
-      await AsyncStorage.removeItem('@storage_Key');
+      await AsyncStorage.clear();
+      console.log('item removed');
     } catch (error) {
       console.log(error);
     }
@@ -42,6 +44,7 @@ const CustomDrawer = (props) => {
 
   const logOut = async () => {
     removeData();
+    navigation.navigate('AuthScreen', {screen: 'SignInScreen'});
     // signOut();
     // props.navigation.navigate('SignInScreen');
   };
@@ -58,19 +61,36 @@ const CustomDrawer = (props) => {
             flexDirection: 'row',
             alignItems: 'center',
           }}>
-          <Image
-            source={{uri: userInformation.avatar}}
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: 10,
-              marginRight: 8,
-            }}></Image>
+          {userInformation?.avatar ? (
+            <Image
+              source={{uri: userInformation.avatar}}
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: 10,
+                marginRight: 8,
+              }}></Image>
+          ) : (
+            <Image
+              source={{
+                uri: 'https://image.flaticon.com/icons/png/256/435/435066.png',
+              }}
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: 10,
+                marginRight: 8,
+              }}></Image>
+          )}
 
           <View>
-            <Text style={{color: 'white', fontSize: 24}}>
-              {userInformation.name}
-            </Text>
+            {userInformation?.name ? (
+              <Text style={{color: 'white', fontSize: 24}}>
+                {userInformation.name}
+              </Text>
+            ) : (
+              <Text style={{color: 'white', fontSize: 24}}>Taimoor</Text>
+            )}
             <Text style={{color: 'white'}}>5.00 *</Text>
           </View>
         </View>

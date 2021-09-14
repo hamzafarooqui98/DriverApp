@@ -12,40 +12,29 @@ const NewOrderPopup = ({newOrder, onAccept, onDecline, duration, distance}) => {
       </Pressable>
 
       <Pressable onPress={onAccept} style={styles.popupContainer}>
+        <Text style={styles.uberType}>{newOrder?.type}</Text>
+
         <View style={styles.row}>
-          <Text style={styles.uberType}>{newOrder?.type}</Text>
+          <View style={styles.places}>
+            <Text style={[styles.text, {color: 'blue'}]}>Origin :</Text>
+            <Text style={[styles.text, {color: 'lightgrey'}]}>
+              {newOrder?.origin.split(',')[0]}
+            </Text>
+          </View>
 
           <View style={styles.userBg}>
             <FontAwesome name={'user'} color={'white'} size={35} />
           </View>
 
-          <Text style={styles.uberType}>
-            <AntDesign name={'star'} size={18} />
-            {newOrder?.user.name}
-          </Text>
-
-          <Text style={styles.uberType}>
-            <AntDesign name={'star'} size={18} />
-            {newOrder?.user.phone}
-          </Text>
-
-          <Text style={styles.uberType}>
-            <AntDesign name={'star'} size={18} />
-            {newOrder?.origin}
-          </Text>
-
-          <Text style={styles.uberType}>
-            <AntDesign name={'star'} size={18} />
-            {newOrder?.destination}
-          </Text>
-
-          <Text style={styles.uberType}>
-            <AntDesign name={'star'} size={18} />
-            {newOrder?.user.rating}
-          </Text>
+          <View style={styles.places}>
+            <Text style={[styles.text, {color: 'blue'}]}>Destination :</Text>
+            <Text style={[styles.text, {color: 'lightgrey'}]}>
+              {newOrder?.destination.split(',')[0]}
+            </Text>
+          </View>
         </View>
 
-        <Text style={styles.minutes}>{duration} minn</Text>
+        <Text style={styles.minutes}>{duration}</Text>
         <Text style={styles.distance}>{distance} mi</Text>
       </Pressable>
     </View>
