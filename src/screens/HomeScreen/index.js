@@ -14,10 +14,11 @@ import {
 } from 'react-native';
 // import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+import {useIsFocused} from '@react-navigation/native';
+
 // import MapViewDirections from 'react-native-maps-directions';
 import MapViewDirections from 'react-native-maps-directions';
 import Entypo from 'react-native-vector-icons/Entypo';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import styles from './styles.js';
 import NewOrderPopup from '../../components/NewOrderPopup';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -82,6 +83,9 @@ const HomeScreen = (props) => {
   const [category, setCategory] = useState('');
   const [orderId, setOrderId] = useState('');
   const [userDuration, setUserDuration] = useState('1');
+  const [userDistance, setUserDistance] = useState('0.5 miles');
+  const isFocused = useIsFocused();
+  const [cash, setCash] = useState('');
   // const [currentRegion, setCurrentRegion] = useState({
   //   latitude: 30.3753,
   //   longitude: 69.3451,
@@ -92,6 +96,7 @@ const HomeScreen = (props) => {
   const userInformation = useSelector(selectUser);
   const preBookInformation = useSelector(selectPreBookOrder);
   const [newOrder, setNewOrder] = useState({});
+  const [userId, setUserId] = useState('');
 
   // Geolocation.getCurrentPosition((info) =>
   //   setCurrentRegion({
@@ -117,6 +122,16 @@ const HomeScreen = (props) => {
     //     }, 5000)
     //   : {};
   };
+
+  // var guideTimeOut = setInterval(() => {
+  //   val ? socket.emit('guide Location', myPosition) : {};
+  // }, 8000);
+  // val
+  //   ? setTimeout(() => {
+  //       //setMyPosition(null);
+  //       socket.emit('guide Location', myPosition);
+  //     }, 10000)
+  //   : {};
 
   const confirmBooking = async () => {
     socket.emit('guide details', userInformation);
@@ -147,20 +162,6 @@ const HomeScreen = (props) => {
       },
     );
     const response = await res.json();
-    console.log(response);
-    // if (response) navigation.navigate("PreBookDateNTime");
-    // if (response) alert("Order updated");
-    // socket.emit("order details", response);
-    // socket.emit("order details", {
-    //   Name: response.data.name,
-    //   Phone: response.data.phone,
-    //   Origin: response.data.origin,
-    //   Destination: response.data.destination,
-    //   OriginLatitude: response.data.originlatitude,
-    //   OriginLongitude: response.data.originLongitude,
-    //   DestLatitude: response.data.destLatitude,
-    //   DestLongitude: response.data.destLongitude,
-    // });
   };
 
   const onAccept = (nOrder) => {
@@ -171,16 +172,9 @@ const HomeScreen = (props) => {
     handleEditOrder(orderId);
     confirmBooking();
     setVal(true);
-
-    // console.log('Purana wala order:', order);
-    // console.log('NEW ORDER', newOrder);
-    // setShowOrder(false);
   };
 
   const onDirectionFound = (event) => {
-    // console.log(event);
-    // console.log('DIRECTIONS BAAD WALA ORDER:', order);
-    // console.log('NEW ORDER:', newOrder);
     if (order) {
       setOrder({
         ...order,
@@ -243,26 +237,29 @@ const HomeScreen = (props) => {
   useEffect(() => {
     getData();
     //  console.log('Hello worlds');
-    console.log('Hwelllo');
+    //console.log('Hwelllo');
     //console.log(preOrder);
     //console.log('Hello');
-    console.log(preBookInformation);
-    if (preBookInformation) {
+    //console.log(preBookInformation);
+    if (isFocused && preBookInformation) {
       setOrder(preBookInformation);
+      setVal(true);
+
+      //isFocused ? console.log('Guide Pos') : console.log('Bothing BC');
+      socket.emit('guide Location', myPosition);
     }
+
     // console.log('Hello world');
     // console.log('Python');
     // console.log(userInformation);
-    console.log(myPosition);
+    //console.log(myPosition);
     socket = io('https://planit-fyp.herokuapp.com');
 
     socket.on('order details', (order) => {
       rejectBooking(order.data._id);
       setOrderId(order.data._id);
-      console.log(myPosition);
+      //console.log(myPosition);
     });
-
-    console.log('Helloo');
 
     socket.on('payment method', (payment) => {
       // setCard(false);
@@ -281,56 +278,114 @@ const HomeScreen = (props) => {
       // setEmit(true);
       //setEmit(true);
     });
-    //   pusher = new Pusher('f4333a508bd2bce3771a', {
-    //     cluster: 'ap2',
-    //   });
-    //   ride_channel = pusher.subscribe('my-channel');
-    //   ride_channel.bind('my-event', (data) => {
-    //     // alert(JSON.stringify(data));
-    //     // console.log(data.Customer);
-    //     // console.log(data.pickup);
-    //     // console.log(data.destination);
-    //     // console.log(this.state.isConnected);
-    //     // if (!hasPassenger) {
-    //     //   // if the driver has currently no passenger
-    //     //   // alert the driver that they have a request
-    //     //   alert(
-    //     //     `You got a passenger! \n Customer: ${data.Customer} \n Pickup: ${data.OriginLatitude} \n Drop off: "${data.DestLongitude}"`
-    //     //   );
-    //     // }
-    //     // setCustomer(data.Customer);
-    //     // setDestination(data.OriginLatitude);
-    //     // setPickupLocation(data.OriginLongitude);
-    //     // setHasPassenger(true);
-    //     setNewOrder((prevState) => ({
-    //       ...prevState,
-    //       originLatitude: data.OriginLatitude,
-    //       originLongitude: data.OriginLongitude,
-    //       destLatitude: data.DestLatitude,
-    //       destLongitude: data.DestLongitude,
-    //       user: {
-    //         rating: 5.0,
-    //         name: data.Customer,
-    //       },
-    //     }));
-    //     setShowOrder(true);
-    //   });
-  }, [preBookInformation]);
+  }, [preBookInformation, isFocused]);
 
   const pickupUser = () => {
     const guidePosition = null;
     socket.emit('final Position', guidePosition);
     setVal(false);
+    // clearInterval(guideTimeOut);
     setIsOnline(!isOnline);
   };
 
-  const close = () => {
+  const handleTransaction = async (payMethod) => {
+    //   var csh = 'PKR'
+    //  if(payMethod == 'cash' && Number(number)>Number(balance)){
+    //       csh.concat(Number(number)-Number(balance))
+    //  }
+    // if (payMethod == 'cash') {
+    //   ;
+    //   setCash(`PKR${greaterAmount}`);
+    // }
+    // console.log(cash);
+    var greaterAmount = number - balance;
+    // console.log(number - balance);
+    // if (number > balance) greaterAmount = ;
+    // console.log(greaterAmount);
+    const res = await fetch(
+      `https://planit-fyp.herokuapp.com/api/transaction`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          guideId,
+          clientName: name,
+          guideName,
+          origin,
+          destination,
+          cost: greaterAmount,
+          payMethod,
+        }),
+      },
+    );
+    const response = await res.json();
+    // console.log(response);
+    //storeData(response.name);
+  };
+
+  const handleCardTransaction = async (payMethod) => {
+    const res = await fetch(
+      `https://planit-fyp.herokuapp.com/api/transaction`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          guideId,
+          clientName: name,
+          guideName,
+          origin,
+          destination,
+          cost,
+          payMethod,
+        }),
+      },
+    );
+    const response = await res.json();
+    // console.log(response);
+    //storeData(response.name);
+  };
+
+  const complete = () => {
     setShowModal(!showModal);
     setEmit(false);
     setCard(false);
     setOrder(null);
     setCost('0.00');
     setGuideCost('0.00');
+    setUserDistance('0.5 miles');
+    setUserDuration('1');
+    if (number > balance) {
+      setCash(number - balance);
+    }
+    handleTransaction('cash');
+  };
+
+  const completeByCard = () => {
+    setShowModal(!showModal);
+    setEmit(false);
+    setCard(false);
+    setOrder(null);
+    setCost('0.00');
+    setGuideCost('0.00');
+    setUserDistance('0.5 miles');
+    setUserDuration('1');
+    handleCardTransaction('card');
+  };
+
+  const close = () => {
+    setOrder(null);
+    setCost('0.00');
+    setGuideCost('0.00');
+    setUserDistance('0.5 miles');
+    setUserDuration('1');
   };
 
   const tripComplete = () => {
@@ -347,21 +402,24 @@ const HomeScreen = (props) => {
       `https://planit-fyp.herokuapp.com/api/orders/${orderId}`,
     );
     const response = await res.json();
-    console.log(response);
+    //console.log(response);
     console.log(typeof response.order.cost.split('R')[1]);
     response.order.category == 'Live'
       ? setBalance(response.order.cost.split('R')[1])
       : null;
     response.order.category == 'Live' ? setCost(response.order.cost) : null;
+
+    setUserId(response.order.user);
     setName(response.order.name);
     setPhone(response.order.phone);
     setOrigin(response.order.origin);
     setDestination(response.order.destination);
     setCategory(response.order.category);
     setUserDuration(response.order.duration);
+    setUserDistance(response.order.distance);
     setNewOrder({
       id: '1',
-      type: 'UberX',
+      type: response.order.tripType,
       cost: response.order.cost,
       // duration: response.order.duration,
       origin: response.order.origin,
@@ -433,7 +491,7 @@ const HomeScreen = (props) => {
             transparent={true}
             visible={showModal}
             onRequestClose={() => {
-              close();
+              complete();
             }}>
             {emit && (
               <View style={styles.centeredView}>
@@ -479,7 +537,7 @@ const HomeScreen = (props) => {
                   </Text>
                   <Pressable
                     style={[styles.modalButton, styles.buttonClose]}
-                    onPress={() => close()}>
+                    onPress={() => complete()}>
                     <Text style={styles.textStyle}>Accept</Text>
                   </Pressable>
                 </View>
@@ -507,7 +565,7 @@ const HomeScreen = (props) => {
                   </Text>
                   <Pressable
                     style={[styles.modalButton, styles.buttonClose]}
-                    onPress={() => close()}>
+                    onPress={() => completeByCard()}>
                     <Text style={styles.textStyle}>Done</Text>
                   </Pressable>
                 </View>
@@ -537,7 +595,7 @@ const HomeScreen = (props) => {
             </View>
             <Text>{order.distance ? order.distance.toFixed(1) : '?'} km</Text>
           </View>
-          <Text style={styles.bottomText}>Dropping off {order.user.name}</Text>
+          <Text style={styles.bottomText}>Guiding {order.user.name}</Text>
         </View>
       );
     }
@@ -626,7 +684,7 @@ const HomeScreen = (props) => {
       <Pressable
         onPress={() => {
           props.navigation.toggleDrawer();
-          console.log('Hello drawer');
+          //console.log('Hello drawer');
         }}
         style={[styles.roundButton, {top: 10, left: 10}]}>
         <Entypo name={'menu'} size={24} color="#4a4a4a" />
@@ -657,9 +715,9 @@ const HomeScreen = (props) => {
       <View style={styles.bottomContainer}>
         <Pressable
           onPress={() => {
-            tripComplete();
+            close();
           }}>
-          <Ionicons name={'options'} size={30} color="#4a4a4a" />
+          <Entypo name={'circle-with-cross'} size={30} color="#4a4a4a" />
         </Pressable>
         {renderBottomTitle()}
         <Pressable onPress={() => props.navigation.navigate('Chat')}>
@@ -850,7 +908,7 @@ const HomeScreen = (props) => {
         <NewOrderPopup
           newOrder={newOrder}
           duration={userDuration}
-          distance={0.5}
+          distance={userDistance}
           onDecline={onDecline}
           onAccept={() => onAccept(newOrder)}
         />

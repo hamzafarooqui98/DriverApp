@@ -39,6 +39,7 @@ const Chat = () => {
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, messages),
     );
+    console.log(messages);
 
     socket.emit('guide message', messages);
   }, []);

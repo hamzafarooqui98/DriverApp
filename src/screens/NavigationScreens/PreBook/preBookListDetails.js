@@ -20,6 +20,7 @@ import {detailsIcons} from './preBook';
 import {useNavigation} from '@react-navigation/native';
 import {selectPreBookOrder, setPreBookOrder} from '../../../slices/navSlice';
 import {useDispatch, useSelector} from 'react-redux';
+import io from 'socket.io-client';
 
 const DURATION = 400;
 const {width, height} = Dimensions.get('screen');
@@ -43,6 +44,7 @@ const PreBookListDetails = ({route}) => {
   const [userDuration, setUserDuration] = useState('1');
   const [newOrder, setNewOrder] = useState({});
   const preBookInformation = useSelector(selectPreBookOrder);
+  const [preBookDetails, setPreBookDetails] = useState();
 
   const rejectBooking = async (orderId) => {
     // setReject(true);
@@ -51,6 +53,8 @@ const PreBookListDetails = ({route}) => {
     );
     const response = await res.json();
     //console.log(response);
+    setPreBookDetails(response);
+
     // console.log(typeof response.order.cost.split('R')[1]);
     // setBalance(response.order.cost.split('R')[1]);
     // setCost(response.order.cost);
@@ -63,11 +67,11 @@ const PreBookListDetails = ({route}) => {
     dispatch(
       setPreBookOrder({
         ...preBookInformation,
-        id: '1',
         type: 'UberX',
         cost: response.order.cost,
         // duration: response.order.duration,
         balance: response.order.cost.split('R')[1],
+        id: response.order._id,
         name: response.order.name,
         phone: response.order.phone,
         userDuration: response.order.duration,
@@ -91,7 +95,8 @@ const PreBookListDetails = ({route}) => {
   };
 
   const press = () => {
-    console.log('Hello button');
+    //console.log('Hello button');
+    socket.emit('pre book', preBookDetails);
     /* 1. Navigate to the Details route with params */
     navigation.navigate('RootScreen', {
       screen: 'Home',
@@ -102,8 +107,9 @@ const PreBookListDetails = ({route}) => {
   };
 
   React.useEffect(() => {
+    socket = io('https://planit-fyp.herokuapp.com');
     rejectBooking(item.key);
-    console.log('Hello pre');
+    // console.log('Hello pre');
   }, []);
 
   return (

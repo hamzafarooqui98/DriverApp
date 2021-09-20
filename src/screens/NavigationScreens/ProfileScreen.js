@@ -58,7 +58,7 @@ const ProfileScreen = ({navigation}) => {
         );
         const response = await res.json();
         setOrdersLength(response.length);
-        setEarnings(response.cost);
+        //setEarnings(response.cost);
         setName(val.name);
         setEmail(val.email);
         setPhone(val.phone);
@@ -69,8 +69,38 @@ const ProfileScreen = ({navigation}) => {
     }
   };
 
+  const getTransactions = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@storage_Key');
+      if (userInformation.token) {
+        // value previously stored
+        // console.log(value);
+        const val = JSON.parse(value);
+        const userId = userInformation.id;
+        const res = await fetch(
+          `https://planit-fyp.herokuapp.com/api/transaction/getGuideTransaction/${userId}`,
+        );
+        const response = await res.json();
+        //console.log(response);
+        //console.log(response.filterTransaction);
+        let moneyArray = response.filterTransaction.map((x) =>
+          Number(x.cost.split('R')[1]),
+        );
+        console.log(moneyArray);
+        let earnings = moneyArray.reduce((a, b) => Math.round(a + b), 0);
+        // console.log(earnings);
+        setEarnings(earnings);
+
+        //setEarnings(response.cost);
+      }
+    } catch (e) {
+      // error reading value
+    }
+  };
+
   useEffect(() => {
     getData();
+    getTransactions();
     console.log(userInformation.id);
     // console.log('Hello world');
   });
@@ -132,7 +162,7 @@ const ProfileScreen = ({navigation}) => {
                 borderRightWidth: 1,
               },
             ]}>
-            <Title>{earnings} Rs</Title>
+            <Title>Rs {earnings}</Title>
             <Caption>Wallet</Caption>
           </View>
           <View style={styles.infoBox}>
