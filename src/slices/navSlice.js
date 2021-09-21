@@ -8,6 +8,7 @@ const initialState = {
   tripCost: null,
   guideLocation: null,
   preBookOrder: null,
+  clientDetails: null,
 };
 
 export const navSlice = createSlice({
@@ -35,6 +36,9 @@ export const navSlice = createSlice({
     setPreBookOrder: (state, action) => {
       state.preBookOrder = action.payload;
     },
+    setClientDetails: (state, action) => {
+      state.clientDetails = action.payload;
+    },
   },
 });
 
@@ -46,6 +50,7 @@ export const {
   setTripCost,
   setGuideLocation,
   setPreBookOrder,
+  setClientDetails,
 } = navSlice.actions;
 
 // Slectors
@@ -58,5 +63,6 @@ export const selectUser = (state) => state.nav.user;
 export const selectTripCost = (state) => state.nav.tripCost;
 export const selectGuideLocation = (state) => state.nav.guideLocation;
 export const selectPreBookOrder = (state) => state.nav.preBookOrder;
+export const selectClientDetails = (state) => state.nav.clientDetails;
 
 export default navSlice.reducer;

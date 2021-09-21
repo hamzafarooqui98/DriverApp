@@ -1,5 +1,11 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native';
 
@@ -13,9 +19,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const WelcomeScreen = (props) => {
   const navigation = useNavigation();
+  const [isFetching, setIsFetching] = React.useState(true);
 
   const getData = async () => {
     try {
+      setIsFetching(true);
       const value = await AsyncStorage.getItem('@storage_Key');
       const obj = JSON.parse(value);
       if (value !== null) {
@@ -29,6 +37,7 @@ const WelcomeScreen = (props) => {
     } catch (e) {
       // error reading value
     }
+    setIsFetching(false);
   };
 
   React.useEffect(() => {
@@ -37,35 +46,48 @@ const WelcomeScreen = (props) => {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.firstRow}>
-        <View style={styles.circleContainerOne}>
-          <View style={styles.circleOne}></View>
-          <View style={styles.circleTwo}></View>
-          <View style={styles.circleThree}></View>
+      {isFetching ? (
+        <ActivityIndicator
+          style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+          size="large"
+          color="green"
+        />
+      ) : (
+        <View>
+          <View style={styles.firstRow}>
+            <View style={styles.circleContainerOne}>
+              <View style={styles.circleOne}></View>
+              <View style={styles.circleTwo}></View>
+              <View style={styles.circleThree}></View>
+            </View>
+            <AtThePark />
+          </View>
+          <View style={styles.secondRow}>
+            <Text style={styles.welcomeText}>WELCOME!!!</Text>
+            <Text style={styles.supportText}>
+              A travel and tour application
+            </Text>
+            <View style={styles.button}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('SignUpScreen')}>
+                <LinearGradient
+                  colors={['#08d4c4', '#01ab9d']}
+                  style={styles.signIn}>
+                  <Text style={styles.textSign}>Get Started</Text>
+                  <MaterialIcons name="navigate-next" color="#fff" size={20} />
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.thirdRow}>
+            <View style={styles.circleContainerTwo}>
+              <View style={styles.circleVerticalone}></View>
+              <View style={styles.circleVerticaltwo}></View>
+              <View style={styles.circleVerticalthree}></View>
+            </View>
+          </View>
         </View>
-        <AtThePark />
-      </View>
-      <View style={styles.secondRow}>
-        <Text style={styles.welcomeText}>WELCOME!!!</Text>
-        <Text style={styles.supportText}>A travel and tour application</Text>
-        <View style={styles.button}>
-          <TouchableOpacity onPress={() => navigation.navigate('SignUpScreen')}>
-            <LinearGradient
-              colors={['#08d4c4', '#01ab9d']}
-              style={styles.signIn}>
-              <Text style={styles.textSign}>Get Started</Text>
-              <MaterialIcons name="navigate-next" color="#fff" size={20} />
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.thirdRow}>
-        <View style={styles.circleContainerTwo}>
-          <View style={styles.circleVerticalone}></View>
-          <View style={styles.circleVerticaltwo}></View>
-          <View style={styles.circleVerticalthree}></View>
-        </View>
-      </View>
+      )}
     </SafeAreaView>
   );
 };

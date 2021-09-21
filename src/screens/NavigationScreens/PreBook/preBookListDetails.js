@@ -17,7 +17,7 @@ import {SharedElement} from 'react-navigation-shared-element';
 import Colors from '../../../constants/Colors';
 
 import {detailsIcons} from './preBook';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {selectPreBookOrder, setPreBookOrder} from '../../../slices/navSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import io from 'socket.io-client';
@@ -45,6 +45,8 @@ const PreBookListDetails = ({route}) => {
   const [newOrder, setNewOrder] = useState({});
   const preBookInformation = useSelector(selectPreBookOrder);
   const [preBookDetails, setPreBookDetails] = useState();
+  const [id, setId] = useState('');
+  const isFocused = useIsFocused();
 
   const rejectBooking = async (orderId) => {
     // setReject(true);
@@ -52,17 +54,9 @@ const PreBookListDetails = ({route}) => {
       `https://planit-fyp.herokuapp.com/api/orders/${orderId}`,
     );
     const response = await res.json();
-    //console.log(response);
+    console.log(response);
+    console.log(orderId);
     setPreBookDetails(response);
-
-    // console.log(typeof response.order.cost.split('R')[1]);
-    // setBalance(response.order.cost.split('R')[1]);
-    // setCost(response.order.cost);
-    // setName(response.order.name);
-    // setPhone(response.order.phone);
-    // setOrigin(response.order.origin);
-    // setDestination(response.order.destination);
-    // setUserDuration(response.order.duration);
 
     dispatch(
       setPreBookOrder({
@@ -95,22 +89,45 @@ const PreBookListDetails = ({route}) => {
   };
 
   const press = () => {
-    //console.log('Hello button');
+    //rejectBooking(item.key);
+    //console.log(item.key);
+    //setVal(true);
     socket.emit('pre book', preBookDetails);
+    // console.log(preBookDetails);
     /* 1. Navigate to the Details route with params */
-    navigation.navigate('RootScreen', {
-      screen: 'Home',
-      params: {
-        screen: 'Home',
-      },
+    //   navigation.navigate('RootScreen', {
+    //     screen: 'Home',
+    //     params: {
+    //       screen: 'Home',
+    //     },
+    //   });
+    // };
+    navigation.reset('RootScreen', {
+      routes: [
+        {
+          screen: 'Home',
+          params: {
+            screen: 'Home',
+          },
+        },
+      ],
+      index: routes.length - 1,
     });
   };
 
   React.useEffect(() => {
     socket = io('https://planit-fyp.herokuapp.com');
     rejectBooking(item.key);
+    // if (val) {
+    //   rejectBooking(item.key);
+    //   socket.emit('pre book', preBookDetails);
+    //   console.log(preBookDetails);
+    // }
+    // console.log(item.key);
+    // setId(item.key);
+    // rejectBooking(item.key);
     // console.log('Hello pre');
-  }, []);
+  }, [item, isFocused]);
 
   return (
     <View style={{flex: 1}}>
@@ -118,11 +135,12 @@ const PreBookListDetails = ({route}) => {
         name="arrowleft"
         size={18}
         style={{
-          padding: 12,
+          padding: 20,
           position: 'absolute',
           top: SPACING * 2,
           left: SPACING,
           zIndex: 2,
+          marginBottom: 30,
         }}
         color={'#333'}
         onPress={() => {
@@ -135,6 +153,7 @@ const PreBookListDetails = ({route}) => {
           backgroundColor: 'white',
           padding: 10,
           borderRadius: 25,
+          marginBottom: 30,
         }}>
         <Entypo name={'menu'} size={24} color="#4a4a4a" />
       </TouchableOpacity>
@@ -210,6 +229,12 @@ const PreBookListDetails = ({route}) => {
                       marginRight: SPACING,
                     }}
                   />
+                  {/* <Button
+                    style={styles.subTitle}
+                    title="Press Me"
+                    onPress={() => console.log(item.key)}
+                  /> */}
+
                   <Text style={styles.subTitle}>{item.date}</Text>
                   <Text style={styles.subTitle}>{item.time}</Text>
                   <Text style={styles.subTitle}>{item.origin}</Text>

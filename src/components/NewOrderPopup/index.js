@@ -4,7 +4,14 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import styles from './styles.js';
 
-const NewOrderPopup = ({newOrder, onAccept, onDecline, duration, distance}) => {
+const NewOrderPopup = ({
+  orderType,
+  newOrder,
+  onAccept,
+  onDecline,
+  duration,
+  distance,
+}) => {
   return (
     <View style={styles.root}>
       <Pressable onPress={onDecline} style={styles.declineButton}>
@@ -12,6 +19,7 @@ const NewOrderPopup = ({newOrder, onAccept, onDecline, duration, distance}) => {
       </Pressable>
 
       <Pressable onPress={onAccept} style={styles.popupContainer}>
+        <Text style={styles.uberType}>{orderType}</Text>
         <Text style={styles.uberType}>{newOrder?.type}</Text>
 
         <View style={styles.row}>

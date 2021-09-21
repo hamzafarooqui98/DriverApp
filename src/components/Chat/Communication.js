@@ -7,10 +7,13 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import io from 'socket.io-client';
 import {TouchableOpacity} from 'react-native';
 import Colors from '../../constants/Colors';
+import {selectClientDetails} from '../../slices/navSlice';
+import {useSelector} from 'react-redux';
 
 const Communication = () => {
+  const clientInformation = useSelector(selectClientDetails);
   const dialCall = () => {
-    let phoneNumber = '03352097647';
+    let phoneNumber = clientInformation.phone;
     if (Platform.OS === 'android') {
       phoneNumber = `tel:${phoneNumber}`;
       //  setPressed(true);
@@ -22,7 +25,7 @@ const Communication = () => {
   };
 
   const whatsappCall = () => {
-    let phoneNumber = '923352097647';
+    let phoneNumber = clientInformation.phone;
     let url = `whatsapp://send?phone=${phoneNumber}`;
     Linking.openURL(url);
   };

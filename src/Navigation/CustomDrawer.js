@@ -11,6 +11,7 @@ import {AuthContext} from '../components/Context';
 import Colors from '../constants/Colors';
 import {setOrigin, setDestination, selectUser} from '../slices/navSlice';
 import {useSelector} from 'react-redux';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const CustomDrawer = (props) => {
   const [name, setName] = useState('');
@@ -137,8 +138,13 @@ const CustomDrawer = (props) => {
       <DrawerItemList {...props} />
 
       {/* Make money */}
-      <Pressable onPress={logOut}>
-        <Text style={{padding: 5, paddingLeft: 20}}>Logout</Text>
+      <Pressable
+        onPress={logOut}
+        style={{flexDirection: 'row', marginLeft: 20, marginTop: 12}}>
+        <MaterialIcons name="logout" size={25} color="black" />
+        <Text style={{padding: 5, paddingLeft: 20, marginLeft: 10}}>
+          Logout
+        </Text>
       </Pressable>
     </DrawerContentScrollView>
   );

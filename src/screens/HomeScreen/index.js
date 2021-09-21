@@ -33,6 +33,8 @@ import {
   setGuideLocation,
   setUser,
   selectPreBookOrder,
+  setPreBookOrder,
+  setClientDetails,
 } from '../../slices/navSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
@@ -86,6 +88,7 @@ const HomeScreen = (props) => {
   const [userDistance, setUserDistance] = useState('0.5 miles');
   const isFocused = useIsFocused();
   const [cash, setCash] = useState('');
+  const [orderType, setOrderType] = useState('');
   // const [currentRegion, setCurrentRegion] = useState({
   //   latitude: 30.3753,
   //   longitude: 69.3451,
@@ -94,9 +97,14 @@ const HomeScreen = (props) => {
   // });
   // const [showOrder, setShowOrder] = useState(false);
   const userInformation = useSelector(selectUser);
-  const preBookInformation = useSelector(selectPreBookOrder);
+  // const [preBookInformation, setPreBookInformation] = useState(
+  //   useSelector(selectPreBookOrder),
+  // );
+  var preBookInformation = useSelector(selectPreBookOrder);
   const [newOrder, setNewOrder] = useState({});
   const [userId, setUserId] = useState('');
+  // const [flagPre, setFlagPre] = useState(false);
+  var flagPre = false;
 
   // Geolocation.getCurrentPosition((info) =>
   //   setCurrentRegion({
@@ -137,7 +145,7 @@ const HomeScreen = (props) => {
     socket.emit('guide details', userInformation);
     console.log(myPosition);
     socket.emit('guide Location', myPosition);
-    setGuideCost(cost);
+    orderType == 'Live' ? setGuideCost(cost) : setGuideCost('0.00');
   };
 
   const onDecline = () => {
@@ -237,12 +245,14 @@ const HomeScreen = (props) => {
   useEffect(() => {
     getData();
     //  console.log('Hello worlds');
-    //console.log('Hwelllo');
     //console.log(preOrder);
-    //console.log('Hello');
-    //console.log(preBookInformation);
-    if (isFocused && preBookInformation) {
+
+    if (isFocused && preBookInformation && flagPre !== true) {
+      // console.log('Hello');
+      // console.log(preBookInformation);
       setOrder(preBookInformation);
+      setCost(preBookInformation.balance);
+      setGuideCost(preBookInformation.cost);
       setVal(true);
 
       //isFocused ? console.log('Guide Pos') : console.log('Bothing BC');
@@ -278,7 +288,7 @@ const HomeScreen = (props) => {
       // setEmit(true);
       //setEmit(true);
     });
-  }, [preBookInformation, isFocused]);
+  }, [preBookInformation, isFocused, flagPre]);
 
   const pickupUser = () => {
     const guidePosition = null;
@@ -343,7 +353,7 @@ const HomeScreen = (props) => {
           guideName,
           origin,
           destination,
-          cost,
+          cost: guideCost,
           payMethod,
         }),
       },
@@ -366,6 +376,10 @@ const HomeScreen = (props) => {
       setCash(number - balance);
     }
     handleTransaction('cash');
+    flagPre = true;
+    // setPreBookInformation(null);
+    preBookInformation = null;
+    dispatch(setPreBookOrder(null));
   };
 
   const completeByCard = () => {
@@ -378,10 +392,43 @@ const HomeScreen = (props) => {
     setUserDistance('0.5 miles');
     setUserDuration('1');
     handleCardTransaction('card');
+    flagPre = true;
+    // setPreBookInformation(null);
+    preBookInformation = null;
+    dispatch(setPreBookOrder(null));
   };
 
   const close = () => {
     setOrder(null);
+    // setFlagPre(true);
+    flagPre = true;
+    // setPreBookInformation(null);
+    preBookInformation = null;
+    dispatch(
+      setPreBookOrder(
+        null,
+        //   type: null,
+        //   cost: null,
+        //   // duration:null,
+        //   balance: null,
+        //   id: null,
+        //   name: null,
+        //   phone: null,
+        //   userDuration: null,
+        //   origin: null,
+        //   destination: null,
+        //   originLatitude: currentRegion.latitude,
+        //   originLongitude: currentRegion.longitude,
+        //   destLatitude: currentRegion.latitude,
+        //   destLongitude: currentRegion.longitude,
+        //   user: {
+        //     rating: 5.0,
+        //     name: null,
+        //     phone: null,
+        //   },
+      ),
+    );
+
     setCost('0.00');
     setGuideCost('0.00');
     setUserDistance('0.5 miles');
@@ -408,7 +455,9 @@ const HomeScreen = (props) => {
       ? setBalance(response.order.cost.split('R')[1])
       : null;
     response.order.category == 'Live' ? setCost(response.order.cost) : null;
-
+    response.order.category == 'Live'
+      ? setOrderType('Live')
+      : setOrderType('PreBook');
     setUserId(response.order.user);
     setName(response.order.name);
     setPhone(response.order.phone);
@@ -434,10 +483,11 @@ const HomeScreen = (props) => {
         phone: response.order.phone,
       },
     });
-    // alert(
-    //   `Customer:${response.order.name},Phone:${response.order.phone},Origin:${response.order.origin},Destination:${response.order.destination}`,
-    // );
-    // socket.emit("order", response);
+    dispatch(
+      setClientDetails({
+        phone: response.order.phone,
+      }),
+    );
   };
 
   const mapRef = useRef();
@@ -604,7 +654,7 @@ const HomeScreen = (props) => {
       return (
         <View style={{alignItems: 'center'}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text>{order.duration ? order.duration.toFixed(1) : '?'} min</Text>
+            <Text>{order?.duration ? order.duration.toFixed(1) : '?'} min</Text>
             <View
               style={{
                 backgroundColor: '#1e9203',
@@ -617,9 +667,9 @@ const HomeScreen = (props) => {
               }}>
               <FontAwesome name={'user'} color={'white'} size={20} />
             </View>
-            <Text>{order.distance ? order.distance.toFixed(1) : '?'} km</Text>
+            <Text>{order?.distance ? order.distance.toFixed(1) : '?'} km</Text>
           </View>
-          <Text style={styles.bottomText}>Picking up {order.user.name}</Text>
+          <Text style={styles.bottomText}>Picking up {order?.user.name}</Text>
         </View>
       );
     }
@@ -906,6 +956,7 @@ const HomeScreen = (props) => {
 
       {newOrder?.id && (
         <NewOrderPopup
+          orderType={orderType}
           newOrder={newOrder}
           duration={userDuration}
           distance={userDistance}
