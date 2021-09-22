@@ -19,7 +19,15 @@ const NewOrderPopup = ({
       </Pressable>
 
       <Pressable onPress={onAccept} style={styles.popupContainer}>
-        <Text style={styles.uberType}>{orderType}</Text>
+        <Text
+          style={{
+            fontSize: 20,
+            marginHorizontal: 10,
+            color: 'blue',
+            fontWeight: 'bold',
+          }}>
+          {orderType}
+        </Text>
         <Text style={styles.uberType}>{newOrder?.type}</Text>
 
         <View style={styles.row}>

@@ -13,6 +13,7 @@ import {
   PermissionsAndroid,
   Platform,
   KeyboardAvoidingView,
+  LogBox,
 } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import 'react-native-gesture-handler';
@@ -37,6 +38,8 @@ import AuthScreen from './src/Navigation/AuthScreen';
 navigator.geolocation = require('@react-native-community/geolocation');
 
 const Stack = createStackNavigator();
+
+LogBox.ignoreAllLogs();
 
 const App: () => React$Node = () => {
   const [token, setToken] = useState('');

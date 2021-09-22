@@ -12,7 +12,7 @@ const Chat = () => {
   useEffect(() => {
     socket = io('https://planit-fyp.herokuapp.com/');
 
-    socket.on('chat message', (msg) => {
+    socket.on('guide message', (msg) => {
       var msgArray = [
         {
           _id: msg[0]._id,
@@ -41,7 +41,7 @@ const Chat = () => {
     );
     console.log(messages);
 
-    socket.emit('guide message', messages);
+    socket.emit('chat message', messages);
   }, []);
 
   const dialCall = () => {

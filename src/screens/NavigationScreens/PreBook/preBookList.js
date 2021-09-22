@@ -103,6 +103,8 @@ const PreBookList = ({navigation}) => {
     console.log(response);
     console.log(id);
     setPreBookDetails(response);
+    socket.emit('pre book', response);
+    socket.emit('guide Phone', guidePhone);
 
     dispatch(
       setPreBookOrder({
@@ -359,16 +361,16 @@ const PreBookList = ({navigation}) => {
               <Pressable
                 style={[styles.modalButton, styles.buttonClose]}
                 onPress={() => {
+                  rejectBooking(orderId);
+                  // socket.emit('pre book', preBookDetails);
+                  // socket.emit('guide Phone', guidePhone);
+                  setShowModal(false);
                   navigation.navigate('RootScreen', {
                     screen: 'Home',
                     params: {
                       screen: 'Home',
                     },
                   });
-                  rejectBooking(orderId);
-                  socket.emit('pre book', preBookDetails);
-                  socket.emit('guide Phone', guidePhone);
-                  setShowModal(false);
                 }}>
                 <Text style={styles.textStyle}>Start</Text>
               </Pressable>
