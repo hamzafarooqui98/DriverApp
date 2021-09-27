@@ -1,5 +1,4 @@
 import {StyleSheet} from 'react-native';
-import profile from '../../assets/taimoor.jpg';
 
 const styles = StyleSheet.create({
   root: {

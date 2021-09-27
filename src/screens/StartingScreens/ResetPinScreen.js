@@ -139,13 +139,13 @@ const ResetPinScreen = ({navigation}) => {
             blurOnSubmit
             autoCapitilize="none"
             keyboardType="number-pad"
-            maxLength={4}
+            maxLength={7}
             style={
               (styles.textInput,
               {
                 color: colors.text,
                 height: '30%',
-                width: '30%',
+                width: '50%',
                 fontSize: 35,
               })
             }

@@ -9,7 +9,7 @@ import {useNavigation} from '@react-navigation/native';
 
 import {AuthContext} from '../components/Context';
 import Colors from '../constants/Colors';
-import {setOrigin, setDestination, selectUser} from '../slices/navSlice';
+import {selectUser} from '../slices/navSlice';
 import {useSelector} from 'react-redux';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -32,11 +32,8 @@ const CustomDrawer = (props) => {
     try {
       const value = await AsyncStorage.getItem('@storage_Key');
       if (value !== null) {
-        // value previously stored
         const val = JSON.parse(value);
         setName(val.name);
-        // console.log(val.name);
-        // console.log(val);
       }
     } catch (e) {
       // error reading value
@@ -46,8 +43,6 @@ const CustomDrawer = (props) => {
   const logOut = async () => {
     removeData();
     navigation.navigate('AuthScreen', {screen: 'SignInScreen'});
-    // signOut();
-    // props.navigation.navigate('SignInScreen');
   };
 
   useEffect(() => {

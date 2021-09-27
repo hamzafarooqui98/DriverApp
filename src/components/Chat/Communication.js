@@ -1,10 +1,8 @@
-import React, {useEffect, useState, useCallback, LogBox} from 'react';
-import {GiftedChat} from 'react-native-gifted-chat';
+import React from 'react';
 
-import {View, Text, Linking} from 'react-native';
+import {View, Linking} from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import io from 'socket.io-client';
 import {TouchableOpacity} from 'react-native';
 import Colors from '../../constants/Colors';
 import {selectClientDetails} from '../../slices/navSlice';
@@ -16,11 +14,9 @@ const Communication = () => {
     let phoneNumber = clientInformation.phone;
     if (Platform.OS === 'android') {
       phoneNumber = `tel:${phoneNumber}`;
-      //  setPressed(true);
     } else {
       phoneNumber = `telprompt:${phoneNumber}`;
     }
-    //let url = `whatsapp://send?phone=${phoneNumber}`;
     Linking.openURL(phoneNumber);
   };
 

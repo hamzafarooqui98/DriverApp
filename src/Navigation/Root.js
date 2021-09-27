@@ -1,14 +1,10 @@
 import React from 'react';
-import {View, Text, Image} from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import HomeNavigator from './Home';
 import CustomDrawer from './CustomDrawer';
 import TripsHistoryComponent from '../screens/NavigationScreens/TripsHistory';
-import SignInScreen from '../screens/StartingScreens/SignIn';
-import Colors from '../constants/Colors';
 import ProfileScreen from '../screens/NavigationScreens/ProfileScreen';
 import EditProfileScreen from '../screens/NavigationScreens/EditProfileScreen';
-// import PreBookNavigator from '../Navigation/PreBookStackNav';
 import PreBookList from '../screens/NavigationScreens/PreBook/preBookList';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';

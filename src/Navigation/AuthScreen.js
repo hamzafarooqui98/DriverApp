@@ -1,5 +1,4 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import WelcomeScreen from '../screens/StartingScreens/WelcomeScreen';
 import SignUpScreen from '../screens/StartingScreens/SignUpScreen';
@@ -69,5 +68,3 @@ const AuthScreen = () => {
 };
 
 export default AuthScreen;
-
-const styles = StyleSheet.create({});

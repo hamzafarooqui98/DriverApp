@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Button,
-  Modal,
-  Image,
-  Text,
-  TouchableOpacity,
-  Animated,
-} from 'react-native';
+import {View, StyleSheet, Modal, Animated} from 'react-native';
 
 const ModalPopUp = ({visible, children}) => {
   const [showModal, setShowModal] = React.useState(visible);

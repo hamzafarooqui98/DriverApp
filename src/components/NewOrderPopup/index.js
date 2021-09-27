@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, Text, Pressable} from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import styles from './styles.js';
 

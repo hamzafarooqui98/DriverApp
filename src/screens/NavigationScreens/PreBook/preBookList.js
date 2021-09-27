@@ -4,7 +4,6 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Image,
   Dimensions,
@@ -13,9 +12,7 @@ import {
   Pressable,
   Animated,
 } from 'react-native';
-import {SharedElement} from 'react-navigation-shared-element';
 
-import preBook from './preBook';
 import Entypo from 'react-native-vector-icons/Entypo';
 import io from 'socket.io-client';
 import {
@@ -24,9 +21,7 @@ import {
   selectPreBookOrder,
 } from '../../../slices/navSlice';
 import {useDispatch, useSelector} from 'react-redux';
-//import {LinearGradient} from 'expo-linear-gradient';
 import Colors from '../../../constants/Colors';
-import profile from '../../../assets/taimoor.jpg';
 import {useIsFocused} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('screen');
@@ -117,6 +112,7 @@ const PreBookList = ({navigation}) => {
         name: response.order.name,
         phone: response.order.phone,
         userDuration: response.order.duration,
+        userId: response.order.user,
         origin: response.order.origin,
         destination: response.order.destination,
         originLatitude: Number(response.order.originlatitude),
@@ -130,10 +126,6 @@ const PreBookList = ({navigation}) => {
         },
       }),
     );
-    // alert(
-    //   `Customer:${response.order.name},Phone:${response.order.phone},Origin:${response.order.origin},Destination:${response.order.destination}`,
-    // );
-    // socket.emit("order", response);
   };
 
   return (
@@ -242,19 +234,6 @@ const PreBookList = ({navigation}) => {
                         </Text>
                         {item.origin}
                       </Text>
-                      {/* 
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          opacity: 0.7,
-                          color: 'black',
-                          flexWrap: 'wrap',
-                        }}>
-                        <Text style={{color: 'green', fontWeight: 'bold'}}>
-                          Destination:{' '}
-                        </Text>
-                        {item.destination}
-                      </Text> */}
                       <Text
                         style={{
                           fontSize: 14,
@@ -285,9 +264,6 @@ const PreBookList = ({navigation}) => {
               );
             }}
           />
-          {/* <SharedElement id="general.bg"> */}
-          {/* <View style={styles.bg} /> */}
-          {/* </SharedElement> */}
         </View>
       )}
       <Pressable
@@ -451,8 +427,6 @@ const styles = StyleSheet.create({
   modalHeader: {
     width: 30,
     height: 30,
-    // alignItems: 'flex-end',
-    // justifyContent: 'center',
     position: 'absolute',
     top: 10,
     right: 10,

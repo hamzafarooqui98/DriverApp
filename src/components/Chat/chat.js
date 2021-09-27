@@ -1,10 +1,8 @@
 import React, {useEffect, useState, useCallback, LogBox} from 'react';
 import {GiftedChat} from 'react-native-gifted-chat';
 
-import {View, Text, Linking} from 'react-native';
-import {Header} from 'react-native-elements';
+import {View, Linking} from 'react-native';
 import io from 'socket.io-client';
-import {TouchableOpacity} from 'react-native';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -44,55 +42,8 @@ const Chat = () => {
     socket.emit('chat message', messages);
   }, []);
 
-  const dialCall = () => {
-    let phoneNumber = '03352097647';
-    if (Platform.OS === 'android') {
-      phoneNumber = `tel:${phoneNumber}`;
-      //  setPressed(true);
-    } else {
-      phoneNumber = `telprompt:${phoneNumber}`;
-    }
-    //let url = `whatsapp://send?phone=${phoneNumber}`;
-    Linking.openURL(phoneNumber);
-  };
-
-  const whatsappCall = () => {
-    let phoneNumber = '923352097647';
-    let url = `whatsapp://send?phone=${phoneNumber}`;
-    Linking.openURL(url);
-  };
-
   return (
     <View style={{flex: 1}}>
-      {/* <Header
-        leftComponent={{
-          icon: "menu",
-          color: "#fff",
-          iconStyle: { color: "#fff" },
-        }}
-        centerComponent={{ text: "MY TITLE", style: { color: "#fff" } }}
-        rightComponent={
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity onPress={dialCall}>
-              <FontAwesome
-                name="phone"
-                size={30}
-                color="#fff"
-                style={{ padding: 10 }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={whatsappCall}>
-              <FontAwesome name="whatsapp" size={30} color="black" />
-            </TouchableOpacity>
-          </View>
-        }
-      /> */}
       <GiftedChat
         messages={messages}
         showUserAvatar={true}
